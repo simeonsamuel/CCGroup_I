@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font: 13px Helvetica, Arial; }
+    form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+    #m { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+    #sendMsg { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+    #messages { list-style-type: none; margin: 0; padding: 0; }
+    #messages li { padding: 5px 10px; }
+    #messages li:nth-child(odd) { background: #eee; }
+    #messages { margin-bottom: 40px }
+
+    #registerContent{}
+
+  </style>
+</head>
+<body>
+
+<div id="registerContent">
+  <p>Please enter a Username to chat with others.</p>
+  <p id="nameError"></p>
+  <form id="usernameForm">
+    <input id="username" required="" size="35">
+    <input id="register" type="submit" value="submit">
+  </form>
+</div>
+
+<ul id="messages"></ul>
+<form action="">
+  <input id="m" autocomplete="off" /><button id="sendMsg">Send</button>
+</form>
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+    $(function () {
+        var socket = io();
+        var $usernameForm = $('#usernameForm');
+        var $usernameError = $('#nameError');
+        var $usernameInput = $('#username');
+
+        $('form').submit(function(){
+            socket.emit('chat message', $('#m').val());
+            $('#m').val('');
+            return false;
+        });
+        socket.on('chat message', function(msg){
+            $('#messages').append($('<li>').text(msg));
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        $usernameForm.submit(function (e) {
+            e.preventDefault();
+            socket.emit('new user', $usernameInput.val(), function (data) {
+                if(data){
+                    //  $('#registerContent').hide();
+                    //   window.location.replace('https://google.de');
+
+                    res.sendFile(__dirname + '/chat.html');
+
+                }else{
+                    $usernameError.html('Username you have chosen is taken. Please choose another one.');
+                }
+            });
+            $usernameInput.val('');
+        });
+    });
+</script>
+</body>
+</html>
