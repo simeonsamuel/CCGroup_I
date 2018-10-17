@@ -6,7 +6,8 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font: 13px Helvetica, Arial; }
-    form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+    #chatDiv{ display: none;}
+    #msgInputForm { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
     #m { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
     #sendMsg { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
     #messages { list-style-type: none; margin: 0; padding: 0; }
@@ -29,10 +30,12 @@
   </form>
 </div>
 
+<div id="chatDiv">
 <ul id="messages"></ul>
-<form action="">
-  <input id="m" autocomplete="off" /><button id="sendMsg">Send</button>
-</form>
+  <form action="" id="msgInputForm">
+    <input id="m" autocomplete="off" /><button id="sendMsg">Send</button>
+  </form>
+</div>
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
@@ -57,11 +60,8 @@
             e.preventDefault();
             socket.emit('new user', $usernameInput.val(), function (data) {
                 if(data){
-                    //  $('#registerContent').hide();
-                    //   window.location.replace('https://google.de');
-
-                    res.sendFile(__dirname + '/chat.html');
-
+                    $('#registerContent').hide();
+                    $('#chatDiv').show();
                 }else{
                     $usernameError.html('Username you have chosen is taken. Please choose another one.');
                 }
