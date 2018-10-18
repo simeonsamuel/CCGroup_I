@@ -19,29 +19,33 @@ io.on('connection', function(socket){
             //add username to socket itself
             socket.username = data;
             usernames.push(socket.username);
-            io.emit('usernames', usernames);
-
+            io.emit('chat message', socket.username + ' has connected ');
+            console.log(socket.username + ' has connected');
         }
     });
 
     socket.on('chat message', function(msg){
-        //Var for Date and Time
-        var moment = new Date();
-        //Prints message plus Date and Time (moment) message was sent
-        io.emit('chat message', msg + '  ' + moment);
+        if(msg == '/list'){
+            socket.emit('private message', usernames);
+        }
+        else{
+            //Prints username and message plus Date and Time (moment) message was sent
+            io.emit('chat message',socket.username + ": " + msg);
+        }
     });
-
-    //Prints message to console that a user connected.
-    console.log('a user connected');
-    //Prints message to Frontend that a user connected.
-    io.emit('chat message', 'a user connected');
 
     socket.on('disconnect', function(){
+        usernames.splice(usernames.indexOf(socket.username), usernames.indexOf(socket.username)+1);
         //Prints message to console that a user disconnected.
-        console.log('user disconnected');
+        console.log(socket.username +' disconnected');
         //Prints message to Frontend that a user disconnected.
-        io.emit('chat message', 'a user disconnected');
+        io.emit('chat message',socket.username + ' disconnected ');
     });
+
+    /* socket.on('userlist', function (socket2) {
+        socket.emit('private message', 'blah');
+        console.log(socket.id);
+    });*/
 
 });
 

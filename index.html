@@ -43,17 +43,33 @@
     $(function () {
         var socket = io();
         var $usernameForm = $('#usernameForm');
+        var $msgInputForm = $('#msgInputForm');
         var $usernameError = $('#nameError');
         var $usernameInput = $('#username');
 
-        $('form').submit(function(){
+        $msgInputForm.submit(function(){
             socket.emit('chat message', $('#m').val());
             $('#m').val('');
             return false;
         });
+
         socket.on('chat message', function(msg){
-            $('#messages').append($('<li>').text(msg));
-            window.scrollTo(0, document.body.scrollHeight);
+                $('#messages').append($('<li>').text(msg + " " + new Date()));
+                window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        socket.on('private message', function(msg){
+            /*if(msg.includes('/list')){
+                socket.emit('userlist', function(socket){});
+            }*/
+            if(Array.isArray(msg) === true){
+                for(var i=0; i<msg.length; i++){
+                    $('#messages').append($('<li>').text(msg[i]));
+                }
+            }
+            else{
+                $('#messages').append($('<li>').text(msg));
+            }
         });
 
         $usernameForm.submit(function (e) {
