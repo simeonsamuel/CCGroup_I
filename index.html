@@ -46,11 +46,39 @@
         var $msgInputForm = $('#msgInputForm');
         var $usernameError = $('#nameError');
         var $usernameInput = $('#username');
+        var userWithoutAt;
+        var privatemsg;
+
 
         $msgInputForm.submit(function(){
-            socket.emit('chat message', $('#m').val());
-            $('#m').val('');
-            return false;
+            var firstChar = $('#m').val().charAt(0);
+            if(firstChar == '@'){
+                var toUser = $('#m').val().substr(0,$('#m').val().indexOf(' '));
+                userWithoutAt = toUser.substr(1);
+                privatemsg = $('#m').val().replace(toUser,'');
+                socket.emit('private', function(){});
+                return false;
+            }
+            else{
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            }
+        });
+
+        socket.on('private',function(data) {
+            for(var i=0; i<data.usernames.length; i++) {
+                if (data.usernames[i] === userWithoutAt) {
+                    let toSocketId = data.socketids[i];
+                    let fromSocketId = data.mysocketid;
+                    for(var z=0;z<data.socketids.length; z++){
+                        if (data.socketids[z] === fromSocketId){
+                            let fromSocketUsername = data.usernames[z];
+                            socket.emit('private', {toSocket: toSocketId, fromSocket: fromSocketUsername, msg: privatemsg});
+                        }
+                    }
+                }
+            }
         });
 
         socket.on('chat message', function(msg){
