@@ -21,7 +21,7 @@ io.on('connection', function(socket){
             socket.username = data;
             usernames.push(socket.username);
             socketids.push(socket.id);
-            io.emit('chat message', socket.username + ' has connected ');
+            io.emit('dis-connect message', socket.username + ' has connected ');
             console.log(socket.username + ' has connected');
         }
     });
@@ -38,8 +38,11 @@ io.on('connection', function(socket){
 
     socket.on('private', function(privatemsg){
         if((privatemsg.fromSocket != null)){
-            socket.emit('chat message', socket.username + ': ' + privatemsg.msg)
-            io.to(`${privatemsg.toSocket}`).emit('chat message', privatemsg.fromSocket + ': ' + privatemsg.msg);
+            socket.emit('chat message', '[PM]' + socket.username + ': ' + privatemsg.msg);
+            if(socket.id !== privatemsg.toSocket){
+                io.to(`${privatemsg.toSocket}`).emit('chat message', '[PM]' + privatemsg.fromSocket + ': ' + privatemsg.msg);
+            }
+
         }else {
             socket.emit('private',{mysocketid: socket.id, usernames: usernames, socketids: socketids });
         }
@@ -51,7 +54,7 @@ io.on('connection', function(socket){
         //Prints message to console that a user disconnected.
         console.log(socket.username +' disconnected');
         //Prints message to Frontend that a user disconnected.
-        io.emit('chat message',socket.username + ' disconnected ');
+        io.emit('dis-connect message',socket.username + ' disconnected ');
     });
 
     /* socket.on('userlist', function (socket2) {
