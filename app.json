@@ -1,6 +1,7 @@
 {
   "name": "Socket-Chat-Example",
   "description": "my first socket.io app",
+  "author": "Yasin Simsek, 741482; Simeon Samuel, 761386",
   "website": "https://github.com/socketio/chat-example",
   "repository": "https://github.com/socketio/chat-example",
   "logo": "https://node-js-sample.herokuapp.com/node.svg",

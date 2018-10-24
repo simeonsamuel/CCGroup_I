@@ -1,3 +1,6 @@
+<!-- Authors:
+Name: Yasin Simsek  Matriculation Nr.: 741482
+Name: Simeon Samuel Matriculation Nr.: 761386-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,6 +58,12 @@
         var privatemsg;
         var usernameFound=false;
 
+        /**
+         * function for sending message from input field to server side (function "private")
+         * proofs if messages first character is "@" for private messaging and trims msg only the username
+         * otherwise ("@" not first character) sends msg to server side ("chat message")
+         * clears input field
+         */
         $msgInputForm.submit(function(){
             var firstChar = $('#m').val().charAt(0);
             if(firstChar === '@'){
@@ -72,6 +81,14 @@
             }
         });
 
+        /**
+         * function for private messaging which is iterating trough username array
+         * proofing if username that gets PM exists and then getting the ID from the sender(toSocketID) and the receiver(fromSocketID)
+         * as well as the username of the receiver(userWithoutAt) and the username of sender(fromSocketUsername) (trough iterating)
+         * sending a PM to tbe specific user with "private" function and the given information from above
+
+         * also proofing in case of invalid usernames to give (only) the sender a feedback msg
+         */
         socket.on('private',function(data) {
             for(var i=0; i<data.usernames.length; i++) {
                 if (data.usernames[i] === userWithoutAt) {
@@ -94,23 +111,41 @@
             usernameFound = false;
         });
 
+        /**
+         * function to send the given msg
+         * with the current time (timestamp) to the chat (html_ message part) with append
+         */
         socket.on('chat message', function(msg){
             $('#messages').append($('<li>').text(new Date() + " - " + msg));
             window.scrollTo(0, document.body.scrollHeight);
-            //alert(msg);
         });
 
+        /**
+         * function to send the given dis-connect msg
+         * with the timestamp to the chat with append
+         */
         socket.on('dis-connect message', function(msg){
             $('#messages').append($('<li class="dis-connectMsg">').text(new Date() + " - " +  msg));
             window.scrollTo(0, document.body.scrollHeight);
         });
 
+        /**
+         * function to send a list of the users that are currently logged into the server
+         * only to user that requests with the list command
+         */
         socket.on('list', function(msg){
                 for(var i=0; i<msg.length; i++){
                     $('#messages').append($('<li>').text(msg[i]));
                 }
         });
 
+        /**
+         * function for registering new users to the chat
+         * the value from the register-input is send to the server side
+         * after data was proofed
+         * if its true the register part is being hid and the chat part is bing shown
+         * otherwise the user is getting a feedback (username is not in accepted format)
+         */
         $usernameForm.submit(function (e) {
             e.preventDefault();
             socket.emit('new user', $usernameInput.val(), function (data) {
@@ -124,6 +159,11 @@
             $usernameInput.val('');
         });
     });
+
+    /**
+     *function to ????????????????????????????????????????
+     * @returns {boolean}
+     */
     function sendfile (){
         if($('#file')[0].files[0] != undefined){
 

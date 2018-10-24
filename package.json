@@ -1,7 +1,9 @@
+
 {
   "name": "socket-chat-example",
   "version": "0.0.1",
   "description": "my first socket.io app",
+  "author": "Yasin Simsek, 741482; Simeon Samuel, 761386",
   "dependencies": {
     "express": "^4.16.4",
     "express-fileupload": "^1.0.0",
