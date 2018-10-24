@@ -28,7 +28,7 @@ io.on('connection', function(socket){
 
     socket.on('chat message', function(msg){
         if(msg == '/list'){
-            socket.emit('private message', usernames);
+            socket.emit('list', usernames);
         }
         else{
             //Prints username and message plus Date and Time (moment) message was sent

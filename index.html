@@ -105,15 +105,10 @@
             window.scrollTo(0, document.body.scrollHeight);
         });
 
-        socket.on('private message', function(msg){
-            if(Array.isArray(msg) === true){
+        socket.on('list', function(msg){
                 for(var i=0; i<msg.length; i++){
                     $('#messages').append($('<li>').text(msg[i]));
                 }
-            }
-            else{
-                $('#messages').append($('<li>').text(msg));
-            }
         });
 
         $usernameForm.submit(function (e) {
@@ -130,14 +125,21 @@
         });
     });
     function sendfile (){
-        if($('#file')[0].files[0] !== undefined){
-            alert($('#file')[0].files[0]);
-            //socket.emit('chat message', $('#file')[0].files[0]);
-            const file = $('#file')[0].files[0];
-            const fileAsBlob = new Blob([new Uint8Array(file)]);
-            const blobAsFile = new File([fileAsBlob], $('#file')[0].files[1], {type: $('#file')[0].files[2], lastModified: file.lastModifiedDate});
-            objectURL = URL.createObjectURL(blobAsFile);
-            socket.emit('chat message', objectURL);
+        if($('#file')[0].files[0] != undefined){
+
+            /*
+            let file = $('#file')[0].files[0];
+            let File = [file, file.name, file.type, "file"];
+
+            let fileAsBlob = new Blob([new Uint8Array(File[0])]);
+            let blobAsFile = new File([fileAsBlob], File[1], {type: File[2]});
+            */
+
+            let file = $('#file')[0].files[0];
+            let fileAsBlob = new Blob([new Uint8Array(file)]);
+            let blobAsFile = new File([fileAsBlob], $('#file')[0].files[0].name, {type: $('#file')[0].files[0].type});
+            //socket.emit('chat message', '<a href=" + objectURL + '" target="_blank">' + $('#file')[0].files[1] +"</a>");
+            $('#messages').append('<a href="' + URL.createObjectURL(blobAsFile) + '" target="_blank">'+ $('#file')[0].files[0].name + "</a>");
         }
         return true;
     }
