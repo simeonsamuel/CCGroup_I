@@ -7,9 +7,10 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font: 13px Helvetica, Arial; }
     #chatDiv{ display: none;}
-    #msgInputForm { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+    #msgInputForm { background: #000; padding: 3px; position: fixed; bottom: 0; width: 50%; left: 0; height: 6.5%; }
+    #fileUploadDiv { background: #000; color: white ;padding: 3px; position: fixed; bottom: 0; width: 50%; right: 0; height: 6.5%; }
     #m { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-    #sendMsg { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+    .sendMsg { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
     #messages { list-style-type: none; margin: 0; padding: 0; }
     #messages li { padding: 5px 10px; }
     #messages li:nth-child(odd) { background: #eee; }
@@ -24,7 +25,7 @@
   <p>Please enter a Username to chat with others.</p>
   <p id="nameError"></p>
   <form id="usernameForm">
-    <input id="username" pattern="[a-zA-Z0-9]{3,30}" title="Nur Buchstaben und Zahlen" required="" size="35">
+    <input id="username" pattern="[a-zA-Z0-9]{3,30}" title="Nur Buchstaben und Zahlen (min. 3 Zeichen)" required="" size="35">
     <input id="register" type="submit" value="submit">
   </form>
 </div>
@@ -32,16 +33,20 @@
 <div id="chatDiv">
   <ul id="messages"></ul>
   <form action="" id="msgInputForm">
-    <input id="m" autocomplete="off" /><button id="sendMsg">Send</button>
+    <input id="m" autocomplete="off" required/><button class="sendMsg">Send</button>
   </form>
+    <div id="fileUploadDiv">
+      <label for="file">Choose file to upload</label>
+      <input type="file" id="file" name="file">
+      <button class="sendMsg" onclick="sendfile()">Send</button>
+    </div>
 </div>
-
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script>
+    var socket = io();
     $(function () {
-        var socket = io();
         var $usernameForm = $('#usernameForm');
         var $msgInputForm = $('#msgInputForm');
         var $usernameError = $('#nameError');
@@ -82,7 +87,7 @@
                 }
             }
             if(!usernameFound){
-                $('#messages').append($('<li>').text("Username invalid" + " " + new Date()));
+                $('#messages').append($('<li>').text(new Date() + " - " + "Username invalid"));
                 window.scrollTo(0, document.body.scrollHeight);
                 usernameFound = false;
             }
@@ -90,12 +95,13 @@
         });
 
         socket.on('chat message', function(msg){
-            $('#messages').append($('<li>').text(msg + " " + new Date()));
+            $('#messages').append($('<li>').text(new Date() + " - " + msg));
             window.scrollTo(0, document.body.scrollHeight);
+            //alert(msg);
         });
 
         socket.on('dis-connect message', function(msg){
-            $('#messages').append($('<li class="dis-connectMsg">').text(msg + " " + new Date()));
+            $('#messages').append($('<li class="dis-connectMsg">').text(new Date() + " - " +  msg));
             window.scrollTo(0, document.body.scrollHeight);
         });
 
@@ -123,6 +129,18 @@
             $usernameInput.val('');
         });
     });
+    function sendfile (){
+        if($('#file')[0].files[0] !== undefined){
+            alert($('#file')[0].files[0]);
+            //socket.emit('chat message', $('#file')[0].files[0]);
+            const file = $('#file')[0].files[0];
+            const fileAsBlob = new Blob([new Uint8Array(file)]);
+            const blobAsFile = new File([fileAsBlob], $('#file')[0].files[1], {type: $('#file')[0].files[2], lastModified: file.lastModifiedDate});
+            objectURL = URL.createObjectURL(blobAsFile);
+            socket.emit('chat message', objectURL);
+        }
+        return true;
+    }
 </script>
 </body>
 </html>

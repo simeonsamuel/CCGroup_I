@@ -33,14 +33,15 @@ io.on('connection', function(socket){
         else{
             //Prints username and message plus Date and Time (moment) message was sent
             io.emit('chat message',socket.username + ": " + msg);
+            //io.emit('chat message', msg);
         }
     });
 
     socket.on('private', function(privatemsg){
         if((privatemsg.fromSocket != null)){
-            socket.emit('chat message', '[PM]' + socket.username + ': ' + privatemsg.msg);
+            socket.emit('chat message', '[Private] ' + socket.username + ': ' + privatemsg.msg);
             if(socket.id !== privatemsg.toSocket){
-                io.to(`${privatemsg.toSocket}`).emit('chat message', '[PM]' + privatemsg.fromSocket + ': ' + privatemsg.msg);
+                io.to(`${privatemsg.toSocket}`).emit('chat message', '[Private] ' + privatemsg.fromSocket + ': ' + privatemsg.msg);
             }
 
         }else {
