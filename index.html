@@ -24,7 +24,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
 </head>
 <body>
 
-<div id="registerContent">
+<div id="registerContent"  align="center">
   <p>Please enter a Username to chat with others.</p>
   <p id="nameError"></p>
   <form id="usernameForm">
@@ -38,11 +38,11 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
   <form action="" id="msgInputForm">
     <input id="m" autocomplete="off" required/><button class="sendMsg">Send</button>
   </form>
-    <div id="fileUploadDiv">
-      <label for="file">Choose file to upload</label>
-      <input type="file" id="file" name="file">
-      <button class="sendMsg" onclick="sendfile()">Send</button>
-    </div>
+  <div id="fileUploadDiv">
+    <label for="file">Choose file to upload</label>
+    <input type="file" id="file" name="file">
+    <button class="sendMsg" onclick="sendfile()">Send</button>
+  </div>
 </div>
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -134,9 +134,9 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
          * only to user that requests with the list command
          */
         socket.on('list', function(msg){
-                for(var i=0; i<msg.length; i++){
-                    $('#messages').append($('<li>').text(msg[i]));
-                }
+            for(var i=0; i<msg.length; i++){
+                $('#messages').append($('<li>').text(msg[i]));
+            }
         });
 
         /**
@@ -161,25 +161,13 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
     });
 
     /**
-     *function to ????????????????????????????????????????
+     *function to display the media file in correct type on the own chat
      * @returns {boolean}
      */
     function sendfile (){
         if($('#file')[0].files[0] != undefined){
-
-            /*
             let file = $('#file')[0].files[0];
-            let File = [file, file.name, file.type, "file"];
-
-            let fileAsBlob = new Blob([new Uint8Array(File[0])]);
-            let blobAsFile = new File([fileAsBlob], File[1], {type: File[2]});
-            */
-
-            let file = $('#file')[0].files[0];
-            let fileAsBlob = new Blob([new Uint8Array(file)]);
-            let blobAsFile = new File([fileAsBlob], $('#file')[0].files[0].name, {type: $('#file')[0].files[0].type});
-            //socket.emit('chat message', '<a href=" + objectURL + '" target="_blank">' + $('#file')[0].files[1] +"</a>");
-            $('#messages').append('<a href="' + URL.createObjectURL(blobAsFile) + '" target="_blank">'+ $('#file')[0].files[0].name + "</a>");
+            $('#messages').append('<a href="' + URL.createObjectURL(file) + '" target="_blank">'+ $('#file')[0].files[0].name + "</a>");
         }
         return true;
     }

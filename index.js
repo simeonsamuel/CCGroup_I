@@ -51,7 +51,7 @@ io.on('connection', function(socket){
      * including the sender username and the msg itself
      */
     socket.on('chat message', function(msg){
-        if(msg == '/list'){
+        if(msg == String.fromCharCode(92) + 'list'){
             socket.emit('list', usernames);
         }
         else{
