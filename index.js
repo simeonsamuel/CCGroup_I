@@ -74,9 +74,9 @@ io.on('connection', function(socket){
      */
     socket.on('private', function(privatemsg){
         if((privatemsg.fromSocket != null)){
-            socket.emit('chat message', '[Private] ' + socket.username + ': ' + privatemsg.msg);
+            socket.emit('private message', '[Private Msg @'+usernames[socketids.indexOf(privatemsg.toSocket)]+'] ' + socket.username + ': ' + privatemsg.msg);
             if(socket.id !== privatemsg.toSocket){
-                io.to(`${privatemsg.toSocket}`).emit('chat message', '[Private] ' + privatemsg.fromSocket + ': ' + privatemsg.msg);
+                io.to(`${privatemsg.toSocket}`).emit('private message', '[Private Msg @'+usernames[socketids.indexOf(privatemsg.toSocket)]+'] ' + privatemsg.fromSocket + ': ' + privatemsg.msg);
             }
 
         }else {
