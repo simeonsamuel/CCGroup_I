@@ -391,6 +391,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             if($('#file')[0].files[0] != undefined){
                 let file = $('#file')[0].files[0];
                 $('#messages').append($('<a class="mediaFileClass" href="' + URL.createObjectURL(file) + '" target="_blank">'+ $('#file')[0].files[0].name + '</a>'));
+                $('#file').val('');
                 window.scrollTo(0, document.body.scrollHeight);
             }
             return true;
@@ -407,6 +408,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             if($('#file')[0].files[0] != undefined){
                 let file = $('#file')[0].files[0];
                 $('#messages').append($('<a class="mediaFileClass" href="' + URL.createObjectURL(file) + '" target="_blank">'+ $('#file')[0].files[0].name + '</a>'));
+                $('#file').val('');
                 window.scrollTo(0, document.body.scrollHeight);
             }
             return true;
