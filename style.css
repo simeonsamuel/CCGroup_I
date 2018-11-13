@@ -1,0 +1,234 @@
+*{ margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      width: 100%;
+      height:100%;
+    }
+    body {
+      margin-top: 10px;
+      width: 100%;
+      height: 97%;
+      min-width: 605px;
+      font: 13px Helvetica, Arial;
+    }
+
+    .headline{
+      color: #111;
+      font-family: Helvetica, sans-serif;
+      font-size: 20px;
+      font-weight: bolder;
+      line-height: 50px;
+      margin: 0 0 0;
+      padding: 2px 30px;
+      text-align: center;
+    }
+    #headBig{
+      margin-top: 15%;
+      font-size: 45px;
+      text-transform: uppercase;
+    }
+    #headSmall{
+      font-size: 26px;
+    }
+
+    #nameError{
+      color: red;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    #usernameFormat{
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .username{
+      width:330px;
+      border:2px solid #aaa;
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+      border-top-right-radius: 5px;
+      border-bottom-right-radius: 5px;
+      outline:none;
+      padding:8px;
+      padding-left: 15px;
+      box-sizing:border-box;
+      transition:.3s;
+      height: 40px;
+      margin-top: 13px;
+      font-weight: bold;
+    }
+
+    .username:focus{
+      border-color:#FFD700;
+      box-shadow:0 0 8px 0 #FFA500;
+    }
+
+    .username:focus:invalid{
+      border-color: red;
+      box-shadow:0 0 8px 0 red;
+    }
+
+    .yellowbutton {
+      background-image: linear-gradient(#FFD700, #FFA500);
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      border-bottom-left-radius: 5px;
+      border-top-left-radius: 5px;
+      cursor: pointer;
+      color: white;
+      font-family: "Helvetica";
+      text-transform: uppercase;
+      font-weight: bolder;
+      border: 0px;
+      height: 40px;
+      min-width: 105px;
+      width: 105px;
+      font-size: 19px;
+      margin-left: 3px;
+      padding-right: 7px;
+      vertical-align: middle;
+      margin-bottom: 3px;
+    }
+
+    .yellowbutton:hover {
+      background-image: linear-gradient(#FFD700, #FFA500);
+      background-color: #FFA500;
+    }
+
+    #registerContent{
+      text-align: center;
+    }
+
+    #chatDiv{
+      display: none;
+      max-height: 90%;
+      height: 90%;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      margin-bottom: 90px;
+    }
+
+    #messages li{
+      padding: 5px 10px;
+      font-weight: bold;
+      width: fit-content;
+      max-width: 97%;
+      margin-top: 10px;
+      margin-left: 1.5%;
+      font-size: 14px;
+      border: 2px solid;
+      border-radius: 15px;
+      height: fit-content;
+      word-wrap: break-word;
+    }
+
+    #messages a{
+      padding: 5px 10px;
+      font-weight: bold;
+      width: fit-content;
+      max-width: 97%;
+      margin-top: 10px;
+      margin-left: 1.5%;
+      font-size: 14px;
+      border: 2px solid;
+      border-radius: 15px;
+      height: fit-content;
+      word-wrap: break-word;
+      display: block;
+    }
+
+    .dis-connectMsgClass{
+      color: red;
+      border-color: red;
+      width: fit-content;
+    }
+
+    .chatMsgClass{
+      border-color: #404040;
+      color: #404040;
+      width: fit-content;
+    }
+
+    .privateChatMsgClass{
+      border-color: #A5A5A5;
+      color: #A5A5A5;
+      width: fit-content;
+    }
+
+    .privateMsgErrorClass{
+      border-color: #ff8c66;
+      color: #ff8c66;
+      width: fit-content;
+    }
+
+    .listClass{
+      border-color: #6699ff;
+      color: #6699ff;
+      width: fit-content;
+    }
+
+    .mediaFileClass{
+      color: blue;
+      text-decoration: underline;
+      border-color: black;
+      width: fit-content;
+      margin-top: 10px;
+    }
+
+    #msgInputDiv {
+      background: #000;
+      padding: 3px;
+      position: fixed;
+      width: 100%;
+      min-height: 42px;
+      bottom: 37px;
+      min-width: 500px;
+    }
+
+    .msgInput{
+      border: 0;
+      border-radius: 18px;
+      padding: 10px;
+      width: 79.5%;
+      margin-right: .5%;
+      margin-left: 1px;
+      outline:none;
+    }
+
+    #fileUploadDiv {
+      background: #000;
+      color: white ;
+      padding: 3px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 4.5%;
+      min-height: 42px;
+      min-width: 500px;
+    }
+
+    .sendMsgBtn {
+      cursor: pointer;
+      color: white;
+      text-transform: uppercase;
+      font-weight: bolder;
+      font-size: 19px;
+      font-family: "Helvetica";
+      background-image: linear-gradient(#FFD700, #FFA500);
+      height: 36px;
+      width: 92px;
+      min-width: 65px;
+      margin-bottom: 2px;
+      margin-left: 1px;
+      border: 0px;
+      border-radius: 20px;
+      padding: 8px;
+      padding-right: 10px;
+      vertical-align: middle;
+      outline:none;
+    }
