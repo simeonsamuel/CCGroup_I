@@ -241,6 +241,16 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
       vertical-align: middle;
       outline:none;
     }
+
+    #Mood {
+      float: left;
+      width: 20px;
+      height: 20px;
+      margin: 5px;
+      border: 1px solid rgba(0, 0, 0, .2);
+      background-color: yellow;
+    }
+
 </style>
 </head>
 <body>
@@ -272,6 +282,8 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
       <input type="file" id="file" name="file" name="file">
       <button class="sendMsgBtn" >Send</button>
       <!--onclick="sendfile()"-->
+
+      <div id="Mood"></div>
     </div>
   </form>
 </div>
@@ -387,6 +399,8 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             $('#messages').append($('<li class="privateChatMsgClass">').text(new CustomTimestamp().toString() + " - " + msg));
             window.scrollTo(0, document.body.scrollHeight);
 
+            socket.emit('requestMood', msg);
+
             if($('#file')[0].files[0] != undefined){
                 let file = $('#file')[0].files[0];
                 $('#messages').append($('<a class="mediaFileClass" href="' + URL.createObjectURL(file) + '" target="_blank">'+ $('#file')[0].files[0].name + '</a>'));
@@ -403,6 +417,8 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         socket.on('chat message', function(msg){
             $('#messages').append($('<li class="chatMsgClass">').text(new CustomTimestamp().toString() + " - " + msg));
             window.scrollTo(0, document.body.scrollHeight);
+
+            socket.emit('requestMood', msg);
 
             if($('#file')[0].files[0] != undefined){
                 let file = $('#file')[0].files[0];
@@ -430,6 +446,14 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             for(var i=0; i<msg.length; i++){
                 $('#messages').append($('<li class="listClass">').text(msg[i]));
                 window.scrollTo(0, document.body.scrollHeight);
+            }
+        });
+
+        socket.on('responseMood', function(msg){
+            if(msg.localeCompare('{"mood":"happy"}')){
+                document.getElementById("Mood").style.backgroundColor = "red";
+            } else if(msg.localeCompare('{"mood":"unhappy"}')){
+                document.getElementById("Mood").style.backgroundColor = "green";
             }
         });
 

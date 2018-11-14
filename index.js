@@ -5,11 +5,25 @@
 
 var app = require('express')();
 var http = require('http').Server(app);
+var http2 = require("http");
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
 var usernames = [];
 var socketids = [];
+
+var options = {
+    "method": "POST",
+    "hostname": "adoring-engelbart.eu-de.mybluemix.net",
+    "path": [
+        "tone"
+    ],
+    "headers": {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        "Postman-Token": "b34b62d9-5af6-43a0-8b9c-a1b6a50b4066"
+    }
+};
 
 /**
  * function to get the correct file(index) (+ correct directory)
@@ -99,6 +113,23 @@ io.on('connection', function(socket){
         io.emit('dis-connect message',socket.username + ' disconnected ');
     });
 
+    socket.on('requestMood', function(msg){
+        var req = http2.request(options, function (res) {
+            var chunks = [];
+
+            res.on("data", function (chunk) {
+                chunks.push(chunk);
+            });
+
+            res.on("end", function () {
+                var body = Buffer.concat(chunks);
+                console.log(body.toString());
+                socket.emit('responseMood', body.toString());
+            });
+        });
+        req.write(JSON.stringify({ texts: [ msg ] }));
+        req.end();
+    });
 
 });
 
