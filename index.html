@@ -278,7 +278,9 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
     <br>
     <input class="username" id="passwort" type="password" name="pwd" autocomplete="off" title="password" required placeholder="Password" size="35">
     <input class="yellowbutton" id="button" type="submit" value="login">
+  </form>
   <br><br><br>
+  <form id="registerForm">
     <p class="headline">Register with a username and password.</p>
     <label id="usernameFormat">Username format: Only letters and numbers. At least 3 characters long.</label>
       <br>
@@ -286,6 +288,9 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
     <br>
     <input class="username" id="registerpasswort" type="password" name="pwd" autocomplete="off" title="password" required placeholder="Password" size="35">
     <input class="yellowbutton" id="registerbutton" type="submit" value="register">
+    <br>
+    <label for="file">Choose your a Profile picture</label>
+    <input type="file" id="profilePicture" name="file" name="file">
   </form>
 </div>
 
@@ -314,46 +319,58 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
     var socket = io();
     $(function () {
         var $usernameForm = $('#usernameForm');
+        var $registerForm = $('#registerForm');
         var $msgInputForm = $('#msgInputForm');
         var $usernameError = $('#nameError');
         var $usernameInput = $('#username');
+        var $registerusernameInput = $('#registerusername');
         var userWithoutAt;
         var privatemsg;
-        var usernameFound=false;
+        var usernameFound = false;
 
 
         /**
          * function to only show time with seconds and date without the timezone
          */
         function CustomTimestamp() {
-            if (new Date().getHours() < 10){
+            if (new Date().getHours() < 10) {
                 this.hour = '0' + new Date().getHours();
-            } else{this.hour = new Date().getHours();}
+            } else {
+                this.hour = new Date().getHours();
+            }
 
-            if (new Date().getMinutes() < 10){
+            if (new Date().getMinutes() < 10) {
                 this.minute = '0' + new Date().getMinutes();
-            } else{this.minute = new Date().getMinutes();}
+            } else {
+                this.minute = new Date().getMinutes();
+            }
 
-            if (new Date().getSeconds() < 10){
+            if (new Date().getSeconds() < 10) {
                 this.second = '0' + new Date().getSeconds();
-            } else{this.second = new Date().getSeconds();}
+            } else {
+                this.second = new Date().getSeconds();
+            }
 
             this.year = new Date().getFullYear();
 
-            if (new Date().getMonth()+1 < 10){
-                this.month = '0' + new Date().getMonth()+1;
-            } else{this.month = new Date().getMonth()+1;}
+            if (new Date().getMonth() + 1 < 10) {
+                this.month = '0' + new Date().getMonth() + 1;
+            } else {
+                this.month = new Date().getMonth() + 1;
+            }
 
-            if (new Date().getDate() < 10){
+            if (new Date().getDate() < 10) {
                 this.day = '0' + new Date().getDate();
-            } else{this.day = new Date().getDate();}
+            } else {
+                this.day = new Date().getDate();
+            }
         }
 
         /**
          * customTimestamp toString
          */
         CustomTimestamp.prototype.toString = function customTimestampToString() {
-            return this.hour+":"+this.minute+":"+this.second+" "+this.year+"-"+this.month +"-"+this.day;
+            return this.hour + ":" + this.minute + ":" + this.second + " " + this.year + "-" + this.month + "-" + this.day;
         }
 
         /**
@@ -362,23 +379,23 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
          * otherwise ("@" not first character) sends msg to server side ("chat message")
          * clears input field
          */
-        $msgInputForm.submit(function(){
+        $msgInputForm.submit(function () {
             var firstChar = $('#m').val().charAt(0);
-            if(firstChar === '@'){
-                var toUser = $('#m').val().substr(0,$('#m').val().indexOf(' '));
+            if (firstChar === '@') {
+                var toUser = $('#m').val().substr(0, $('#m').val().indexOf(' '));
                 userWithoutAt = toUser.substr(1);
-                privatemsg = $('#m').val().replace(toUser,'');
-                socket.emit('private', function(){});
+                privatemsg = $('#m').val().replace(toUser, '');
+                socket.emit('private', function () {
+                });
                 $('#m').val('');
                 return false;
             }
-            else{
+            else {
                 socket.emit('chat message', $('#m').val());
                 $('#m').val('');
                 return false;
             }
         });
-
 
 
         /**
@@ -389,21 +406,25 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
 
          * also proofing in case of invalid usernames to give (only) the sender a feedback msg
          */
-        socket.on('private',function(data) {
-            for(var i=0; i<data.usernames.length; i++) {
+        socket.on('private', function (data) {
+            for (var i = 0; i < data.usernames.length; i++) {
                 if (data.usernames[i] === userWithoutAt) {
-                    usernameFound=true;
+                    usernameFound = true;
                     let toSocketId = data.socketids[i];
                     let fromSocketId = data.mysocketid;
-                    for(var z=0;z<data.socketids.length; z++){
-                        if (data.socketids[z] === fromSocketId){
+                    for (var z = 0; z < data.socketids.length; z++) {
+                        if (data.socketids[z] === fromSocketId) {
                             let fromSocketUsername = data.usernames[z];
-                            socket.emit('private', {toSocket: toSocketId, fromSocket: fromSocketUsername, msg: privatemsg});
+                            socket.emit('private', {
+                                toSocket: toSocketId,
+                                fromSocket: fromSocketUsername,
+                                msg: privatemsg
+                            });
                         }
                     }
                 }
             }
-            if(!usernameFound){
+            if (!usernameFound) {
                 $('#messages').append($('<li class="privateMsgErrorClass">').text(new CustomTimestamp().toString() + " - " + "Username invalid"));
                 window.scrollTo(0, document.body.scrollHeight);
                 usernameFound = false;
@@ -415,15 +436,15 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
          * function to send the given private msg
          * with the current time (timestamp) to the chat (html_ message part) with append
          */
-        socket.on('private message', function(msg){
+        socket.on('private message', function (msg) {
             $('#messages').append($('<li class="privateChatMsgClass">').text(new CustomTimestamp().toString() + " - " + msg));
             window.scrollTo(0, document.body.scrollHeight);
 
             socket.emit('requestMood', msg);
 
-            if($('#file')[0].files[0] != undefined){
+            if ($('#file')[0].files[0] != undefined) {
                 let file = $('#file')[0].files[0];
-                $('#messages').append($('<a class="mediaFileClass" href="' + URL.createObjectURL(file) + '" target="_blank">'+ $('#file')[0].files[0].name + '</a>'));
+                $('#messages').append($('<a class="mediaFileClass" href="' + URL.createObjectURL(file) + '" target="_blank">' + $('#file')[0].files[0].name + '</a>'));
                 $('#file').val('');
                 window.scrollTo(0, document.body.scrollHeight);
             }
@@ -434,15 +455,15 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
          * function to send the given msg
          * with the current time (timestamp) to the chat (html_ message part) with append
          */
-        socket.on('chat message', function(msg){
+        socket.on('chat message', function (msg) {
             $('#messages').append($('<li class="chatMsgClass">').text(new CustomTimestamp().toString() + " - " + msg));
             window.scrollTo(0, document.body.scrollHeight);
 
             socket.emit('requestMood', msg);
 
-            if($('#file')[0].files[0] != undefined){
+            if ($('#file')[0].files[0] != undefined) {
                 let file = $('#file')[0].files[0];
-                $('#messages').append($('<a class="mediaFileClass" href="' + URL.createObjectURL(file) + '" target="_blank">'+ $('#file')[0].files[0].name + '</a>'));
+                $('#messages').append($('<a class="mediaFileClass" href="' + URL.createObjectURL(file) + '" target="_blank">' + $('#file')[0].files[0].name + '</a>'));
                 $('#file').val('');
                 window.scrollTo(0, document.body.scrollHeight);
             }
@@ -453,8 +474,8 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
          * function to send the given dis-connect msg
          * with the timestamp to the chat with append
          */
-        socket.on('dis-connect message', function(msg){
-            $('#messages').append($('<li class="dis-connectMsgClass">').text(new CustomTimestamp().toString() + " - " +  msg));
+        socket.on('dis-connect message', function (msg) {
+            $('#messages').append($('<li class="dis-connectMsgClass">').text(new CustomTimestamp().toString() + " - " + msg));
             window.scrollTo(0, document.body.scrollHeight);
         });
 
@@ -462,17 +483,17 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
          * function to send a list of the users that are currently logged into the server
          * only to user that requests with the list command
          */
-        socket.on('list', function(msg){
-            for(var i=0; i<msg.length; i++){
+        socket.on('list', function (msg) {
+            for (var i = 0; i < msg.length; i++) {
                 $('#messages').append($('<li class="listClass">').text(msg[i]));
                 window.scrollTo(0, document.body.scrollHeight);
             }
         });
 
-        socket.on('responseMood', function(msg){
-            if(msg.localeCompare('{"mood":"happy"}')){
+        socket.on('responseMood', function (msg) {
+            if (msg.localeCompare('{"mood":"happy"}')) {
                 document.getElementById("Mood").style.backgroundColor = "red";
-            } else if(msg.localeCompare('{"mood":"unhappy"}')){
+            } else if (msg.localeCompare('{"mood":"unhappy"}')) {
                 document.getElementById("Mood").style.backgroundColor = "green";
             }
         });
@@ -487,18 +508,30 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         $usernameForm.submit(function (e) {
             e.preventDefault();
             socket.emit('new user', $usernameInput.val(), function (data) {
-                if(data){
+                if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
-                }else{
+                } else {
                     $usernameError.html('Username you have chosen is taken. Please choose another one.');
                 }
             });
             $usernameInput.val('');
         });
 
-    });
+        $registerForm.submit(function (e) {
+            e.preventDefault();
+            socket.emit('new user', $registerusernameInput.val(), function (data) {
+                if (data) {
+                    $('#registerContent').hide();
+                    $('#chatDiv').show();
+                } else {
+                    $usernameError.html('Username you have chosen is taken. Please choose another one.');
+                }
+            });
 
+        });
+
+    });
     /**
      *function to display the media file in correct type on the own chat
      * @returns {boolean}
