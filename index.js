@@ -8,9 +8,30 @@ var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
-
+var db = require('ibm_db');
 var usernames = [];
 var socketids = [];
+var connStr = 'DRIVER={DB2};' +
+    'HOSTNAME=dashdb-txn-sbox-yp-lon02-01.services.eu-gb.bluemix.net;' +
+    'PORT=50000;' +
+    'DATABASE=BLUDB;' +
+    'UID=wrf22173;' +
+    'PWD=l6z+2325rvgfgv2d';
+
+
+db.open(connStr, function (err,conn) {
+    if (err) return console.log(err);
+
+    var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('MaxMustermann','Musterpasswort')";
+    conn.query(sql, function (err, data) {
+        if (err) console.log(err);
+        else console.log(data);
+
+        conn.close(function () {
+            console.log('done');
+        });
+    });
+});
 
 var options = {
     "method": "POST",
