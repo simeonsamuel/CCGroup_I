@@ -258,15 +258,23 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
   <p class="headline" id="headBig">A simple chat server</p>
   <p class="headline" id="headSmall">A project for our cloud computing course.</p>
   <br><br>
-  <p class="headline">Please enter a username to chat with others.</p>
-
+  <p class="headline">Please register with a username and password.</p>
   <p id="nameError"></p>
   <form id="usernameForm">
     <label id="usernameFormat">Username format: Only letters and numbers. At least 3 characters long.</label>
     <br>
-    <input class="username" id="username" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder=" " size="35">
-    <input class="yellowbutton" id="register" type="submit" value="submit">
+    <input class="username" id="registerusername" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder=" " size="35">
+    <br>
+    <input class="username" id="registerpasswort" type="password" name="pwd" autocomplete="off" title="password" required placeholder=" " size="35">
+    <input class="yellowbutton" id="registerbutton" type="submit" value="submit">
   </form>
+  <br><br>
+  <p class="headline">Please login to chat with others.</p>
+  <input class="username" id="loginusername" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder=" " size="35">
+  <br>
+  <input class="username" id="loginpasswort" type="password" name="pwd" autocomplete="off" title="password" required placeholder=" " size="35">
+  <input class="yellowbutton" id="loginbutton" type="submit" value="submit">
+
 </div>
 
 <div id="chatDiv">
