@@ -22,7 +22,7 @@ var connStr = 'DRIVER={DB2};' +
 db.open(connStr, function (err,conn) {
     if (err) return console.log(err);
 
-    var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('MaxMustermann','Musterpasswort')";
+    var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('Peter','Petermann')";
     conn.query(sql, function (err, data) {
         if (err) console.log(err);
         else console.log(data);
