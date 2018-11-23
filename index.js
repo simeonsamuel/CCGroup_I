@@ -19,19 +19,6 @@ var connStr = 'DRIVER={DB2};' +
     'PWD=l6z+2325rvgfgv2d';
 
 
-db.open(connStr, function (err,conn) {
-    if (err) return console.log(err);
-
-    var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('Peter','Petermann')";
-    conn.query(sql, function (err, data) {
-        if (err) console.log(err);
-        else console.log(data);
-
-        conn.close(function () {
-            console.log('done');
-        });
-    });
-});
 
 var options = {
     "method": "POST",
@@ -75,6 +62,21 @@ io.on('connection', function(socket){
             socketids.push(socket.id);
             io.emit('dis-connect message', socket.username + ' has connected ');
             console.log(socket.username + ' has connected');
+
+
+            db.open(connStr, function (err,conn) {
+                if (err) return console.log(err);
+
+                var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('Peter','Petermann')";
+                conn.query(sql, function (err, data) {
+                    if (err) console.log(err);
+                    else console.log(data);
+
+                    conn.close(function () {
+                        console.log('done');
+                    });
+                });
+            });
         }
     });
 
