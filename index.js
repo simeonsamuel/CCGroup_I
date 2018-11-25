@@ -54,7 +54,29 @@ io.on('connection', function(socket){
      *  (connect message)
      */
     socket.on('new user', function(data, callback){
-        if(usernames.indexOf(data)!= -1){
+        var usergefunden = false;
+
+        db.open(connStr, function (err,conn) {
+            if (err) return console.log(err);
+
+            var sql = "SELECT * FROM USER_TABLE";
+            conn.query(sql, function (err, data) {
+                if (err) console.log(err);
+                else {
+                    data.forEach(function(tablerow) {
+                        if(tablerow.BENUTZERNAME == socket.username){
+                            usergefunden = true;
+                        }
+                    });
+                }
+
+                conn.close(function () {
+                    console.log('done');
+                });
+            });
+        });
+
+        if(usergefunden === true){
             callback(false);
         }else{
             callback(true);
@@ -90,11 +112,6 @@ io.on('connection', function(socket){
             socket.username = data.loginusername;
             loginpass = data.loginpasswort;
 
-            usernames.push(socket.username);
-            socketids.push(socket.id);
-            io.emit('dis-connect message', socket.username + ' has connected ');
-            console.log(socket.username + ' has connected');
-
             db.open(connStr, function (err,conn) {
                 if (err) return console.log(err);
 
@@ -118,6 +135,11 @@ io.on('connection', function(socket){
                     });
                 });
             });
+
+            usernames.push(socket.username);
+            socketids.push(socket.id);
+            io.emit('dis-connect message', socket.username + ' has connected ');
+            console.log(socket.username + ' has connected');
 
         }
     });
