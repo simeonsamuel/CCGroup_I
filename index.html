@@ -323,8 +323,9 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         var $msgInputForm = $('#msgInputForm');
         var $usernameError = $('#nameError');
         var $usernameInput = $('#username');
+        var $passwortInput = document.getElementById('passwort');
         var $registerusernameInput = $('#registerusername');
-        var $registerpasswortInput = document.getElementById('registerpasswort')
+        var $registerpasswortInput = document.getElementById('registerpasswort');
         var userWithoutAt;
         var privatemsg;
         var usernameFound = false;
@@ -501,7 +502,8 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
 
         $usernameForm.submit(function (e) {
             e.preventDefault();
-           /* socket.emit('new user', $usernameInput.val(), function (data) {
+            alert($passwortInput.value);
+            socket.emit('login user', {loginusername: $usernameInput.val(), loginpasswort: $passwortInput.value}, function (data) {
                 if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
@@ -509,7 +511,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
                     $usernameError.html('Username you have chosen is taken. Please choose another one.');
                 }
             });
-            $usernameInput.val(''); */
+            $usernameInput.val('');
         });
 
 

@@ -13,6 +13,7 @@ var db = require('ibm_db');
 
 var usernames = [];
 var socketids = [];
+var loginpass;
 var connStr = 'DRIVER={DB2};' +
     'HOSTNAME=dashdb-txn-sbox-yp-lon02-01.services.eu-gb.bluemix.net;' +
     'PORT=50000;' +
@@ -68,7 +69,7 @@ io.on('connection', function(socket){
             db.open(connStr, function (err,conn) {
                 if (err) return console.log(err);
 
-                console.log("db.open geht rein");
+                console.log("db.open geht rein (register)");
                 var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','"+ sha256(data.registerpasswort) + "')";
                 conn.query(sql, function (err, data) {
                     if (err) console.log(err);
@@ -81,6 +82,47 @@ io.on('connection', function(socket){
             });
         }
     });
+
+    socket.on('login user', function(data, callback){
+        if(usernames.indexOf(data)!= -1){
+            callback(false);
+        }else {
+            socket.username = data.loginusername;
+            loginpass = data.loginpasswort;
+
+            usernames.push(socket.username);
+            socketids.push(socket.id);
+            io.emit('dis-connect message', socket.username + ' has connected ');
+            console.log(socket.username + ' has connected');
+
+            db.open(connStr, function (err,conn) {
+                if (err) return console.log(err);
+
+                console.log("db.open geht rein (login)");
+                var sql = "SELECT * FROM USER_TABLE";
+                conn.query(sql, function (err, data) {
+                    if (err) console.log(err);
+                    else {
+                        console.log(socket.username);
+                        console.log(loginpass);
+                        data.forEach(function(tablerow) {
+                            //console.log(tablerow.BENUTZERNAME + tablerow.PASSWORT);
+                            if((tablerow.BENUTZERNAME == socket.username) &&(tablerow.PASSWORT == loginpass)){
+                                callback(true); //Enter chatroom when entered Username and Passwort is found in Database
+                            }
+                        });
+                    }
+
+                    conn.close(function () {
+                        console.log('done');
+                    });
+                });
+            });
+
+        }
+    });
+
+
 
     /**
      * function for sending chat messages to the chat:
