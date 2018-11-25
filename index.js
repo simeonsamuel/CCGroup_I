@@ -126,6 +126,13 @@ io.on('connection', function(socket){
                             //console.log(tablerow.BENUTZERNAME + tablerow.PASSWORT);
                             if((tablerow.BENUTZERNAME == socket.username) &&(tablerow.PASSWORT == sha256(loginpass))){
                                 callback(true); //Enter chatroom when entered Username and Passwort is found in Database
+
+                                usernames.push(socket.username);
+                                socketids.push(socket.id);
+                                io.emit('dis-connect message', socket.username + ' has connected ');
+                                console.log(socket.username + ' has connected');
+                            } else {
+                                callback(false);
                             }
                         });
                     }
@@ -136,10 +143,7 @@ io.on('connection', function(socket){
                 });
             });
 
-            usernames.push(socket.username);
-            socketids.push(socket.id);
-            io.emit('dis-connect message', socket.username + ' has connected ');
-            console.log(socket.username + ' has connected');
+
 
         }
     });
