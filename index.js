@@ -107,7 +107,7 @@ io.on('connection', function(socket){
                         console.log(loginpass);
                         data.forEach(function(tablerow) {
                             //console.log(tablerow.BENUTZERNAME + tablerow.PASSWORT);
-                            if((tablerow.BENUTZERNAME == socket.username) &&(tablerow.PASSWORT == loginpass)){
+                            if((tablerow.BENUTZERNAME == socket.username) &&(tablerow.PASSWORT == sha256(loginpass))){
                                 callback(true); //Enter chatroom when entered Username and Passwort is found in Database
                             }
                         });
