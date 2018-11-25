@@ -324,6 +324,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         var $usernameError = $('#nameError');
         var $usernameInput = $('#username');
         var $registerusernameInput = $('#registerusername');
+        var $registerpasswortInput = $('#registerpasswort');
         var userWithoutAt;
         var privatemsg;
         var usernameFound = false;
@@ -498,16 +499,9 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             }
         });
 
-        /**
-         * function for registering new users to the chat
-         * the value from the register-input is send to the server side
-         * after data was proofed
-         * if its true the register part is being hid and the chat part is bing shown
-         * otherwise the user is getting a feedback (username is not in accepted format)
-         */
         $usernameForm.submit(function (e) {
             e.preventDefault();
-            socket.emit('new user', $usernameInput.val(), function (data) {
+           /* socket.emit('new user', $usernameInput.val(), function (data) {
                 if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
@@ -515,12 +509,20 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
                     $usernameError.html('Username you have chosen is taken. Please choose another one.');
                 }
             });
-            $usernameInput.val('');
+            $usernameInput.val(''); */
         });
 
+
+        /**
+         * function for registering new users to the chat
+         * the value from the register-input is send to the server side
+         * after data was proofed
+         * if its true the register part is being hid and the chat part is bing shown
+         * otherwise the user is getting a feedback (username is not in accepted format)
+         */
         $registerForm.submit(function (e) {
             e.preventDefault();
-            socket.emit('new user', $registerusernameInput.val(), function (data) {
+            socket.emit('new user', {registerusername: $registerusernameInput.val(), registerpasswort: $registerpasswortInput}, function (data) {
                 if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();

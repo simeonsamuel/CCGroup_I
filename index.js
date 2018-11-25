@@ -57,7 +57,8 @@ io.on('connection', function(socket){
             callback(false);
         }else{
             callback(true);
-            socket.username = data;
+            socket.username = data.registerusername;
+            socket.password = data.registerpasswort;
             usernames.push(socket.username);
             socketids.push(socket.id);
             io.emit('dis-connect message', socket.username + ' has connected ');
@@ -67,7 +68,7 @@ io.on('connection', function(socket){
             db.open(connStr, function (err,conn) {
                 if (err) return console.log(err);
 
-                var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('Peter','Petermann')";
+                var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES (" + socket.username + ","+ socket.password + ")";
                 conn.query(sql, function (err, data) {
                     if (err) console.log(err);
                     else console.log(data);
