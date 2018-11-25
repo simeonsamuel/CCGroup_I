@@ -14,6 +14,7 @@ var db = require('ibm_db');
 var usernames = [];
 var socketids = [];
 var loginpass;
+var usergefunden = false;
 var connStr = 'DRIVER={DB2};' +
     'HOSTNAME=dashdb-txn-sbox-yp-lon02-01.services.eu-gb.bluemix.net;' +
     'PORT=50000;' +
@@ -38,14 +39,14 @@ var options = {
  * function to get the correct file(index) (+ correct directory)
  * sends html-page to the given path
  */
-app.get('/', function(req, res){
+app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
 /**
  * function to listen to the connection of the socket and react to events from user
  */
-io.on('connection', function(socket){
+io.on('connection', function (socket) {
 
     /** function to add username to the username array (with push)
      *  and to the socket itself
@@ -53,66 +54,72 @@ io.on('connection', function(socket){
      *  Then feedback about user is send back to client side: true or false as data
      *  (connect message)
      */
-    socket.on('new user', function(data, callback){
-        var usergefunden = false;
+    socket.on('new user', function (data, callback) {
+        socket.username = data.registerusername;
 
-        db.open(connStr, function (err,conn) {
+        db.open(connStr, function (err, conn) {
             if (err) return console.log(err);
 
             var sql = "SELECT * FROM USER_TABLE";
+
             conn.query(sql, function (err, data) {
+                console.log("0");
                 if (err) console.log(err);
                 else {
-                    data.forEach(function(tablerow) {
-                        if(tablerow.BENUTZERNAME == socket.username){
+                    data.forEach(function (tablerow) {
+                        console.log(tablerow.BENUTZERNAME + " " + socket.username);
+                        if (tablerow.BENUTZERNAME == socket.username) {
                             usergefunden = true;
                         }
                     });
                 }
 
+                if (usergefunden === true) {
+                    callback(false); //user found, send back error
+                    usergefunden = true;
+                }
+
                 conn.close(function () {
-                    console.log('done');
+                    console.log('done: checked if username exists in database');
                 });
             });
         });
 
-        if(usergefunden === true){
-            callback(false);
-        }else{
-            callback(true);
-            socket.username = data.registerusername;
-            console.log(socket.username + " " + data.registerpasswort);
-            console.log(socket.username + " " + sha256(data.registerpasswort));
-            usernames.push(socket.username);
-            socketids.push(socket.id);
-            io.emit('dis-connect message', socket.username + ' has connected ');
-            console.log(socket.username + ' has connected');
 
-            db.open(connStr, function (err,conn) {
-                if (err) return console.log(err);
+        db.open(connStr, function (err, conn2) {
+            if (err) return console.log(err);
 
-                console.log("db.open geht rein (register)");
-                var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','"+ sha256(data.registerpasswort) + "')";
-                conn.query(sql, function (err, data) {
+            if (usergefunden === false) {
+                var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
+                conn2.query(sq2, function (err, data) {
+
                     if (err) console.log(err);
                     else console.log(data);
 
-                    conn.close(function () {
-                        console.log('done');
+                    callback(true);
+                    usernames.push(socket.username);
+                    socketids.push(socket.id);
+                    io.emit('dis-connect message', socket.username + ' has connected ');
+                    console.log(socket.username + ' has connected');
+
+                    conn2.close(function () {
+                        console.log('done: insert row in database');
                     });
                 });
-            });
-        }
+            }
+        });
     });
 
-    socket.on('login user', function(data, callback){
-        if(usernames.indexOf(data)!= -1){
+
+    socket.on('login user', function (data, callback) {
+        var loginusergefunden = false;
+        if (usernames.indexOf(data.loginusername) != -1) {
             callback(false);
-        }else {
+        } else {
             socket.username = data.loginusername;
             loginpass = data.loginpasswort;
 
-            db.open(connStr, function (err,conn) {
+            db.open(connStr, function (err, conn) {
                 if (err) return console.log(err);
 
                 console.log("db.open geht rein (login)");
@@ -122,19 +129,26 @@ io.on('connection', function(socket){
                     else {
                         console.log(socket.username);
                         console.log(loginpass);
-                        data.forEach(function(tablerow) {
-                            //console.log(tablerow.BENUTZERNAME + tablerow.PASSWORT);
-                            if((tablerow.BENUTZERNAME == socket.username) &&(tablerow.PASSWORT == sha256(loginpass))){
-                                callback(true); //Enter chatroom when entered Username and Passwort is found in Database
+                        console.log(sha256(loginpass));
+                        data.forEach(function (tablerow) {
+                            console.log("->" + tablerow.BENUTZERNAME + " " + socket.username);
+                            console.log("-->" + tablerow.PASSWORT + " " + sha256(loginpass));
+                            if ((tablerow.BENUTZERNAME == socket.username) && (tablerow.PASSWORT == sha256(loginpass))) {
+                                loginusergefunden = true;
 
                                 usernames.push(socket.username);
                                 socketids.push(socket.id);
                                 io.emit('dis-connect message', socket.username + ' has connected ');
                                 console.log(socket.username + ' has connected');
-                            } else {
-                                callback(false);
                             }
                         });
+                    }
+
+                    if (loginusergefunden === true) {
+                        callback(true); //Enter chatroom when entered Username and Passwort is found in Database
+                    } else {
+                        console.log("JUNGE WTF");
+                        callback(false)
                     }
 
                     conn.close(function () {
@@ -142,12 +156,8 @@ io.on('connection', function(socket){
                     });
                 });
             });
-
-
-
         }
     });
-
 
 
     /**
@@ -157,12 +167,12 @@ io.on('connection', function(socket){
      * otherwise the msg is send to the chat message (client side)
      * including the sender username and the msg itself
      */
-    socket.on('chat message', function(msg){
-        if(msg == String.fromCharCode(92) + 'list'){
+    socket.on('chat message', function (msg) {
+        if (msg == String.fromCharCode(92) + 'list') {
             socket.emit('list', usernames);
         }
-        else{
-            io.emit('chat message',socket.username + ": " + msg);
+        else {
+            io.emit('chat message', socket.username + ": " + msg);
         }
     });
 
@@ -179,15 +189,15 @@ io.on('connection', function(socket){
      * of the receiver (id) is sent to the "private" client side and from there sent back to this function again
      * so in the second iteration the msg is not null and the private message is sent to the specif sender and receiver.
      */
-    socket.on('private', function(privatemsg){
-        if((privatemsg.fromSocket != null)){
-            socket.emit('private message', '[Private Msg @'+usernames[socketids.indexOf(privatemsg.toSocket)]+'] ' + socket.username + ': ' + privatemsg.msg);
-            if(socket.id !== privatemsg.toSocket){
-                io.to(`${privatemsg.toSocket}`).emit('private message', '[Private Msg @'+usernames[socketids.indexOf(privatemsg.toSocket)]+'] ' + privatemsg.fromSocket + ': ' + privatemsg.msg);
+    socket.on('private', function (privatemsg) {
+        if ((privatemsg.fromSocket != null)) {
+            socket.emit('private message', '[Private Msg @' + usernames[socketids.indexOf(privatemsg.toSocket)] + '] ' + socket.username + ': ' + privatemsg.msg);
+            if (socket.id !== privatemsg.toSocket) {
+                io.to(`${privatemsg.toSocket}`).emit('private message', '[Private Msg @' + usernames[socketids.indexOf(privatemsg.toSocket)] + '] ' + privatemsg.fromSocket + ': ' + privatemsg.msg);
             }
 
-        }else {
-            socket.emit('private',{mysocketid: socket.id, usernames: usernames, socketids: socketids });
+        } else {
+            socket.emit('private', {mysocketid: socket.id, usernames: usernames, socketids: socketids});
         }
     });
 
@@ -199,14 +209,14 @@ io.on('connection', function(socket){
      *
      * then the disconnect msg is sent to the chat
      */
-    socket.on('disconnect', function(){
-        usernames.splice(usernames.indexOf(socket.username), usernames.indexOf(socket.username)+1);
-        socketids.splice(socketids.indexOf(socket.id), socketids.indexOf(socket.id)+1);
-        console.log(socket.username +' disconnected');
-        io.emit('dis-connect message',socket.username + ' disconnected ');
+    socket.on('disconnect', function () {
+        usernames.splice(usernames.indexOf(socket.username), usernames.indexOf(socket.username) + 1);
+        socketids.splice(socketids.indexOf(socket.id), socketids.indexOf(socket.id) + 1);
+        console.log(socket.username + ' disconnected');
+        io.emit('dis-connect message', socket.username + ' disconnected ');
     });
 
-    socket.on('requestMood', function(msg){
+    socket.on('requestMood', function (msg) {
         var req = http2.request(options, function (res) {
             var chunks = [];
 
@@ -220,7 +230,7 @@ io.on('connection', function(socket){
                 socket.emit('responseMood', body.toString());
             });
         });
-        req.write(JSON.stringify({ texts: [ msg ] }));
+        req.write(JSON.stringify({texts: [msg]}));
         req.end();
     });
 
@@ -230,6 +240,6 @@ io.on('connection', function(socket){
  * function to listening to the port setted above
  * with console.log for feedback
  */
-http.listen(port, function(){
+http.listen(port, function () {
     console.log('listening on *:' + port);
 });
