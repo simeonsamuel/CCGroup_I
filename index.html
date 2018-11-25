@@ -324,7 +324,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         var $usernameError = $('#nameError');
         var $usernameInput = $('#username');
         var $registerusernameInput = $('#registerusername');
-        var $registerpasswortInput = $('#registerpasswort');
+        var $registerpasswortInput = document.getElementById('registerpasswort')
         var userWithoutAt;
         var privatemsg;
         var usernameFound = false;
@@ -522,7 +522,8 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
          */
         $registerForm.submit(function (e) {
             e.preventDefault();
-            socket.emit('new user', {registerusername: $registerusernameInput.val(), registerpasswort: $registerpasswortInput}, function (data) {
+            alert($registerpasswortInput.value);
+            socket.emit('new user', {registerusername: $registerusernameInput.val(), registerpasswort: $registerpasswortInput.value}, function (data) {
                 if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();

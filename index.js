@@ -7,8 +7,10 @@ var app = require('express')();
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
+var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
 var db = require('ibm_db');
+
 var usernames = [];
 var socketids = [];
 var connStr = 'DRIVER={DB2};' +
@@ -17,8 +19,6 @@ var connStr = 'DRIVER={DB2};' +
     'DATABASE=BLUDB;' +
     'UID=wrf22173;' +
     'PWD=l6z+2325rvgfgv2d';
-
-
 
 var options = {
     "method": "POST",
@@ -58,17 +58,18 @@ io.on('connection', function(socket){
         }else{
             callback(true);
             socket.username = data.registerusername;
-            socket.password = data.registerpasswort;
+            console.log(socket.username + " " + data.registerpasswort);
+            console.log(socket.username + " " + sha256(data.registerpasswort));
             usernames.push(socket.username);
             socketids.push(socket.id);
             io.emit('dis-connect message', socket.username + ' has connected ');
             console.log(socket.username + ' has connected');
 
-
             db.open(connStr, function (err,conn) {
                 if (err) return console.log(err);
 
-                var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + ","+ socket.password + "')";
+                console.log("db.open geht rein");
+                var sql = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','"+ sha256(data.registerpasswort) + "')";
                 conn.query(sql, function (err, data) {
                     if (err) console.log(err);
                     else console.log(data);
