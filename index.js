@@ -89,8 +89,8 @@ io.on('connection', function (socket) {
 
                     if (usergefunden === false) {
 
-                        db.open(connStr, function (err, conn) {
-                            if (err) return console.log(err);
+                        //db.open(connStr, function (err, conn) {
+                          //  if (err) return console.log(err);
                             var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
                             conn.query(sq2, function (err, data) {
 
@@ -103,13 +103,12 @@ io.on('connection', function (socket) {
                                 io.emit('dis-connect message', socket.username + ' has connected ');
                                 console.log(socket.username + ' has connected');
 
-                                conn.close(function () {
+                            /*    conn.close(function () {
                                     console.log('done: insert row in database');
-                                });
+                                });*/
                             });
-                        });
-                    }
-                    ;
+                        //});
+                    };
 
                 }
                 conn.close(function () {
