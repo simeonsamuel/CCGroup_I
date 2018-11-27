@@ -379,6 +379,9 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         var userWithoutAt;
         var privatemsg;
         var usernameFound = false;
+        var fileReader = new FileReader();
+        var profileAdded=false;
+        var profilePicture;
 
 
         /**
@@ -575,7 +578,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         $registerForm.submit(function (e) {
             e.preventDefault();
             alert($registerpasswortInput.value);
-            socket.emit('new user', {registerusername: $registerusernameInput.val(), registerpasswort: $registerpasswortInput.value}, function (data) {
+            socket.emit('new user', {profile: profilePicture, registerusername: $registerusernameInput.val(), registerpasswort: $registerpasswortInput.value}, function (data) {
                 if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
@@ -585,7 +588,14 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             });
 
         });
-
+        $('#profilePicture').change(function(e){
+            profilePicture = e.target.files[0];
+            fileReader.readAsDataURL(profilePicture);
+            profileAdded=true;
+            fileReader.onload  = function(){
+                profilePicture = fileReader.result;
+            }
+        });
     });
     /**
      *function to display the media file in correct type on the own chat
@@ -627,6 +637,8 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
     function showFiledata(input){
         console.log(dataFile);
     }
+
+
 </script>
 </body>
 </html>

@@ -3,7 +3,15 @@
  * Name: Simeon Samuel Matriculation Nr.: 761386
  */
 
-import * as express from "express";
+//Facedetection requirements
+var fs = require('fs');
+var path = require('path');
+var async = require('async');
+var uuid = require('uuid');
+var os = require('os');
+var asyncTime = 40000;
+var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
+
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -12,8 +20,7 @@ var io = require('socket.io')(http);
 var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
 var db = require('ibm_db');
-
-var directory = require('path').join(__dirname);
+var validProfile= false;
 
 app.enable('trust proxy'); //needed to redirect to https later
 
@@ -41,7 +48,12 @@ var options = {
     }
 };
 
-app.use(express.static(directory));
+var VR = new VisualRecognitionV3({
+    version: '2018-03-19',
+    url: 'https://gateway.watsonplatform.net/visual-recognition/api',
+    iam_apikey: 'mPpxPNzm6wxCxudhIHz1krUx25vj5jp9SvpioPaq1Irh',
+    use_unauthenticated: false
+});
 
 //Redirecting to https if not secure
 app.use(function (req, res, next) {
@@ -52,7 +64,6 @@ app.use(function (req, res, next) {
         res.redirect('https://' + req.headers.host + req.url);
     }
 });
-
 
 /**
  * function to get the correct file(index) (+ correct directory)
@@ -100,25 +111,35 @@ io.on('connection', function (socket) {
 
             if (usergefunden === false) {
 
-                db.open(connStr, function (err, conn) {
-                    if (err) return console.log(err);
-                    var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
-                    conn.query(sq2, function (err, data) {
+                if(data.profile){
+                    checkFace(data.profile).then(()=>{
 
-                        if (err) console.log(err);
-                        else console.log(data);
+                        if(validProfile){
+                            db.open(connStr, function (err, conn) {
+                                if (err) return console.log(err);
+                                var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
+                                conn.query(sq2, function (err, data) {
 
-                        callback(true);
-                        usernames.push(socket.username);
-                        socketids.push(socket.id);
-                        io.emit('dis-connect message', socket.username + ' has connected ');
-                        console.log(socket.username + ' has connected');
+                                    if (err) console.log(err);
+                                    else console.log(data);
 
-                        conn.close(function () {
-                            console.log('done: insert row in database');
-                        });
-                    });
-                });
+                                    callback(true);
+                                    usernames.push(socket.username);
+                                    socketids.push(socket.id);
+                                    io.emit('dis-connect message', socket.username + ' has connected ');
+                                    console.log(socket.username + ' has connected');
+
+                                    conn.close(function () {
+                                        console.log('done: insert row in database');
+                                    });
+                                });
+                            });
+                        }else{
+                            callback(false);
+                        }
+
+                    })
+                }
             }
             ;
         });
@@ -258,3 +279,51 @@ io.on('connection', function (socket) {
 http.listen(port, function () {
     console.log('listening on *:' + port);
 });
+
+function parseBase64Image(imageString) {
+    var matches = imageString.match(/^data:image\/([A-Za-z-+/]+);base64,(.+)$/);
+    var resource = {};
+    if (matches.length !== 3) {
+        return null;
+    }
+    resource.type = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+    resource.data = new Buffer(matches[2], 'base64');
+    return resource;
+}
+
+function checkFace(base64PIC) {
+    return new Promise(function (resolve, reject) {
+        var params = {
+            images_file: null
+        };
+        // write the base64 image to a temp fil
+        var resource = parseBase64Image(base64PIC);
+        var temp = path.join(os.tmpdir(), uuid.v1() + '.' + resource.type);
+        fs.writeFileSync(temp, resource.data);
+        params.images_file = fs.createReadStream(temp);
+
+        var methods = [];
+        params.threshold = 0.5; //So the classifers only show images with a confindence level of 0.5 or higher
+        methods.push('detectFaces');
+        async.parallel(methods.map(function(method) {
+            var fn = VR[method].bind(VR, params);
+            return async.reflect(async.timeout(fn, asyncTime));
+        }), function(err, results) {
+            // combine the results
+            results.map(function(result) {
+                if (result.value && result.value.length) {
+                    result.value = result.value[0];
+                }
+                if(result.value["images"][0]["faces"].length>0){
+                    validProfile = true;
+                    console.log("GESICHT ERKANNT");
+                    resolve(true);
+                }else{
+                    console.log("KEIN GESICHT");
+                    reject(false);
+                }
+                return result;
+            })
+        });
+    });
+}
