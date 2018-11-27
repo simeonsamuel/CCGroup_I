@@ -13,7 +13,8 @@ var asyncTime = 40000;
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 
 
-var app = require('express');
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
@@ -71,7 +72,7 @@ app.use(function (req, res, next) {
  * sends html-page to the given path
  */
 
-app.use('/', app.static(__dirname + '/chat'));
+app.use('/', express.static(__dirname + '/chat'));
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/chat/index.html');
 });
