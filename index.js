@@ -69,6 +69,8 @@ app.use(function (req, res, next) {
  * function to get the correct file(index) (+ correct directory)
  * sends html-page to the given path
  */
+
+app.use('/', app.static(__dirname + '/chat'));
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
