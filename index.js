@@ -11,7 +11,7 @@ var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
 var db = require('ibm_db');
 
-//var directory = require('path').join(__dirname);
+var directory = require('path').join(__dirname);
 
 app.enable('trust proxy'); //needed to redirect to https later
 
@@ -39,7 +39,7 @@ var options = {
     }
 };
 
-//app.use(express.static(directory));
+app.use(express.static(directory));
 
 //Redirecting to https if not secure
 app.use(function (req, res, next) {
