@@ -73,6 +73,7 @@ io.on('connection', function (socket) {
                             callback(false);
                         }
                     })
+                    console.log(usergefunden);
                     if (usergefunden === false) {
 
                         db.open(connStr, function (err, conn) {
