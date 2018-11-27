@@ -3,6 +3,8 @@
  * Name: Simeon Samuel Matriculation Nr.: 761386
  */
 
+import * as express from "express";
+
 var app = require('express')();
 var http = require('http').Server(app);
 var http2 = require("http");
