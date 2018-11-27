@@ -328,13 +328,14 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
     <br><br>
       <input class="username" id="registerusername" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder="Username" size="35">
       <br><br>
-    <form id="profilepic" runat="server">
+      <input type="file" id="profilePicture" name="file" accept="image/png, image/jpeg, image/gif">
+ <!--   <form id="profilepic" runat="server">
       <input type="file" id="profilePicture" name="file" accept="image/png, image/jpeg, image/gif">
       <br><br>
         <img for="file" src="avatar.jpeg" id="choosenProfilepic" onclick="showFiledata()">
       <br><br>
       <button class="yellowbutton" id="removePicButton" onclick="removePic()">Back to default pic</button>
-    </form>
+    </form> -->
     <br>
     <input class="username" id="registerpasswort" type="password" name="pwd" autocomplete="off" title="password" required placeholder="Password" size="35">
     <input class="yellowbutton" id="registerbutton" type="submit" value="register">
