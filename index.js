@@ -60,8 +60,6 @@ app.get('/', function (req, res) {
  * function to listen to the connection of the socket and react to events from user
  */
 io.on('connection', function (socket) {
-    db.open(connStr, function (err, conn) {
-        if (err) return console.log(err);
 
     /** function to add username to the username array (with push)
      *  and to the socket itself
@@ -72,7 +70,8 @@ io.on('connection', function (socket) {
     socket.on('new user', function (data, callback) {
         socket.username = data.registerusername;
 
-
+        db.open(connStr, function (err, conn) {
+            if (err) return console.log(err);
 
             var sql = "SELECT * FROM USER_TABLE";
 
@@ -87,38 +86,36 @@ io.on('connection', function (socket) {
                             callback(false);
                         }
                     })
-
-                    if (usergefunden === false) {
-
-                        db.open(connStr, function (err, conn) {
-                            if (err) return console.log(err);
-                            var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
-                            conn.query(sq2, function (err, data) {
-
-                                if (err) console.log(err);
-                                else console.log(data);
-
-                                callback(true);
-                                usernames.push(socket.username);
-                                socketids.push(socket.id);
-                                io.emit('dis-connect message', socket.username + ' has connected ');
-                                console.log(socket.username + ' has connected');
-
-                                conn.close(function () {
-                                    console.log('done: insert row in database');
-                                });
-                            });
-                        });
-                    };
-
                 }
                 conn.close(function () {
                     console.log('done: checked if username exists in database');
                 });
             });
 
+            if (usergefunden === false) {
 
-       // });
+                db.open(connStr, function (err, conn) {
+                    if (err) return console.log(err);
+                    var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
+                    conn.query(sq2, function (err, data) {
+
+                        if (err) console.log(err);
+                        else console.log(data);
+
+                        callback(true);
+                        usernames.push(socket.username);
+                        socketids.push(socket.id);
+                        io.emit('dis-connect message', socket.username + ' has connected ');
+                        console.log(socket.username + ' has connected');
+
+                        conn.close(function () {
+                            console.log('done: insert row in database');
+                        });
+                    });
+                });
+            }
+            ;
+        });
         usergefunden = false;
     });
 
@@ -245,7 +242,7 @@ io.on('connection', function (socket) {
         req.write(JSON.stringify({texts: [msg]}));
         req.end();
     });
-    });
+
 });
 
 /**
