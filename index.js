@@ -11,6 +11,7 @@ var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
 var db = require('ibm_db');
 
+var directory = require('path').join(__dirname);
 app.enable('trust proxy'); //needed to redirect to https later
 
 var usernames = [];
@@ -36,6 +37,8 @@ var options = {
         "Postman-Token": "b34b62d9-5af6-43a0-8b9c-a1b6a50b4066"
     }
 };
+
+app.use(express.static(directory));
 
 //Redirecting to https if not secure
 app.use(function (req, res, next) {
