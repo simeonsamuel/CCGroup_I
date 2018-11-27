@@ -135,7 +135,7 @@ io.on('connection', function (socket) {
                                 });
                             });
                         }else{
-                            callback(false);
+                            socket.emit('ProfileError',{});
                         }
 
                     })

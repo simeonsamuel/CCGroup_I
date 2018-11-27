@@ -535,6 +535,10 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             window.scrollTo(0, document.body.scrollHeight);
         });
 
+        socket.on('ProfileError', function () {
+            alert("Kein PRofilbild!");
+        });
+
         /**
          * function to send a list of the users that are currently logged into the server
          * only to user that requests with the list command
