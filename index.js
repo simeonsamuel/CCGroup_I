@@ -76,20 +76,24 @@ io.on('connection', function (socket) {
                 }
 
                 if (usergefunden === false) {
-                    var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
-                    conn.query(sq2, function (err, data) {
 
-                        if (err) console.log(err);
-                        else console.log(data);
+                    db.open(connStr, function (err, conn) {
+                        if (err) return console.log(err);
+                        var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
+                        conn.query(sq2, function (err, data) {
 
-                        callback(true);
-                        usernames.push(socket.username);
-                        socketids.push(socket.id);
-                        io.emit('dis-connect message', socket.username + ' has connected ');
-                        console.log(socket.username + ' has connected');
+                            if (err) console.log(err);
+                            else console.log(data);
 
-                        conn.close(function () {
-                            console.log('done: insert row in database');
+                            callback(true);
+                            usernames.push(socket.username);
+                            socketids.push(socket.id);
+                            io.emit('dis-connect message', socket.username + ' has connected ');
+                            console.log(socket.username + ' has connected');
+
+                            conn.close(function () {
+                                console.log('done: insert row in database');
+                            });
                         });
                     });
                 }
