@@ -72,31 +72,32 @@ io.on('connection', function (socket) {
                             usergefunden = true;
                             callback(false);
                         }
-                    });
-                }
+                    })
+                    if (usergefunden === false) {
 
-                if (usergefunden === false) {
+                        db.open(connStr, function (err, conn) {
+                            if (err) return console.log(err);
+                            var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
+                            conn.query(sq2, function (err, data) {
 
-                    db.open(connStr, function (err, conn) {
-                        if (err) return console.log(err);
-                        var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
-                        conn.query(sq2, function (err, data) {
+                                if (err) console.log(err);
+                                else console.log(data);
 
-                            if (err) console.log(err);
-                            else console.log(data);
+                                callback(true);
+                                usernames.push(socket.username);
+                                socketids.push(socket.id);
+                                io.emit('dis-connect message', socket.username + ' has connected ');
+                                console.log(socket.username + ' has connected');
 
-                            callback(true);
-                            usernames.push(socket.username);
-                            socketids.push(socket.id);
-                            io.emit('dis-connect message', socket.username + ' has connected ');
-                            console.log(socket.username + ' has connected');
-
-                            conn.close(function () {
-                                console.log('done: insert row in database');
+                                conn.close(function () {
+                                    console.log('done: insert row in database');
+                                });
                             });
                         });
-                    });
+                    };
                 }
+
+
 
                 conn.close(function () {
                     console.log('done: checked if username exists in database');
