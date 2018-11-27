@@ -111,7 +111,7 @@ io.on('connection', function (socket) {
 
             if (usergefunden === false) {
 
-                if(data.profile){
+                if(data.profile.length>0){
                     checkFace(data.profile).then(()=>{
 
                         if(validProfile){
