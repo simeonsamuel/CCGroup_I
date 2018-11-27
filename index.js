@@ -77,7 +77,7 @@ io.on('connection', function (socket) {
 
                 if (usergefunden === false) {
                     var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
-                    conn2.query(sq2, function (err, data) {
+                    conn.query(sq2, function (err, data) {
 
                         if (err) console.log(err);
                         else console.log(data);
@@ -88,7 +88,7 @@ io.on('connection', function (socket) {
                         io.emit('dis-connect message', socket.username + ' has connected ');
                         console.log(socket.username + ' has connected');
 
-                        conn2.close(function () {
+                        conn.close(function () {
                             console.log('done: insert row in database');
                         });
                     });
