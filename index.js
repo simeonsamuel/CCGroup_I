@@ -11,6 +11,8 @@ var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
 var db = require('ibm_db');
 
+app.enable('trust proxy'); //needed to redirect to https later
+
 var usernames = [];
 var socketids = [];
 var loginpass;
@@ -34,6 +36,17 @@ var options = {
         "Postman-Token": "b34b62d9-5af6-43a0-8b9c-a1b6a50b4066"
     }
 };
+
+//Redirecting to https if not secure
+app.use(function (req, res, next) {
+    if (req.secure || process.env.BLUEMIX_REGION === undefined) {
+        next();
+    } else {
+        console.log('redirecting to https');
+        res.redirect('https://' + req.headers.host + req.url);
+    }
+});
+
 
 /**
  * function to get the correct file(index) (+ correct directory)
@@ -100,7 +113,8 @@ io.on('connection', function (socket) {
                         });
                     });
                 });
-            };
+            }
+            ;
         });
         usergefunden = false;
     });
