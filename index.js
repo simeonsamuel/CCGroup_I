@@ -139,6 +139,9 @@ io.on('connection', function (socket) {
                         }
 
                     })
+                        .catch((error)=>
+                            socket.emit('ProfileError',{})
+                        );
                 }
             }
             ;
