@@ -102,6 +102,7 @@ io.on('connection', function (socket) {
                 });
             };
         });
+        usergefunden = false;
     });
 
 
