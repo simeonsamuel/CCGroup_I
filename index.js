@@ -13,7 +13,7 @@ var asyncTime = 40000;
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 
 
-var app = require('express')();
+var app = require('express');
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
