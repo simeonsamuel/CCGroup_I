@@ -32,7 +32,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
       text-align: center;
     }
     #headBig{
-      margin-top: 10%;
+      margin-top: 5%;
       font-size: 45px;
       text-transform: uppercase;
     }
@@ -46,7 +46,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
       font-size: 14px;
     }
 
-    #usernameFormat{
+    .usernameFormat{
       font-size: 14px;
       font-weight: bold;
     }
@@ -263,6 +263,46 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         border-top-right-radius: 20px;
     }
 
+    #registerpasswort{
+      margin-top: 0px;
+      margin-bottom: 25px;
+    }
+
+    #choosenProfilepic{
+      max-width: 130px;
+      max-height: 130px;
+      min-height: 130px;
+      min-width: 130px;
+      border-radius: 50%;
+      border: 2px solid #aaa;
+      top: 10px;
+      right: 267px;
+    }
+
+    #profilePicture{
+      width: 127px;
+      font-size: 15px;
+      top: 28px;
+      left: 233px;
+    }
+
+    #removePicButton{
+      border-radius: 25px;
+      width: 132px;
+      height: 39px;
+      font-size: 14px;
+      top: 81px;
+      left: 227px;
+    }
+
+    #profilePicDiv{
+      height: 155px;
+      width: 449px;
+      border: solid 2px #aaa;
+      border-radius: 38px;
+      left: 242px;
+    }
+
 </style>
 </head>
 <body>
@@ -282,15 +322,24 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
   <br><br><br>
   <form id="registerForm">
     <p class="headline">Register with a username and password.</p>
-    <label id="usernameFormat">Username format: Only letters and numbers. At least 3 characters long.</label>
-      <br>
-    <input class="username" id="registerusername" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder="Username" size="35">
+    <label class="usernameFormat">Username format: Only letters and numbers. At least 3 characters long.</label>
+      <br><br>
+    <label class="usernameFormat">Note: Profile pic needs to be a human face.</label>
+    <br><br>
+      <input class="username" id="registerusername" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder="Username" size="35">
+      <br><br>
+    <form id="profilepic" runat="server">
+      <input type="file" id="profilePicture" name="file" accept="image/png, image/jpeg, image/gif">
+      <br><br>
+        <img for="file" src="avatar.jpeg" id="choosenProfilepic" onclick="showFiledata()">
+      <br><br>
+      <button class="yellowbutton" id="removePicButton" onclick="removePic()">Back to default pic</button>
+    </form>
     <br>
     <input class="username" id="registerpasswort" type="password" name="pwd" autocomplete="off" title="password" required placeholder="Password" size="35">
     <input class="yellowbutton" id="registerbutton" type="submit" value="register">
     <br>
-    <label for="file">Choose your a Profile picture</label>
-    <input type="file" id="profilePicture" name="file" name="file">
+
   </form>
 </div>
 
@@ -315,6 +364,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script>
     var socket = io();
     $(function () {
@@ -549,6 +599,34 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         }
         return true;
     }*/
+
+    var dataFile = null;
+
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#choosenProfilepic').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+
+            dataFile = input.files[0]
+        }
+    }
+
+    function removePic(){
+        $('#choosenProfilepic').attr('src', 'avatar.jpeg');
+        dataFile = null;
+    }
+
+    $("#profilePicture").change(function () {
+        readURL(this);
+    });
+
+    function showFiledata(input){
+        console.log(dataFile);
+    }
 </script>
 </body>
 </html>
