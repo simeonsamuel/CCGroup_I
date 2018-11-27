@@ -13,7 +13,7 @@ var asyncTime = 40000;
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 
 
-var express = require('express');
+var app = require('express');
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
@@ -21,7 +21,7 @@ var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
 var db = require('ibm_db');
 var validProfile= false;
-var app = express();
+
 
 app.enable('trust proxy'); //needed to redirect to https later
 
@@ -71,9 +71,9 @@ app.use(function (req, res, next) {
  * sends html-page to the given path
  */
 
-app.use('/', express.static(__dirname + '/chat'));
+app.use('/', app.static(__dirname + '/chat'));
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/chat/index.html');
 });
 
 /**
