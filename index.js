@@ -99,7 +99,7 @@ app.use(session({
 
 app.use(require('express-secure-cookie'));
 
-app.get('https://gifted-pike.eu-de.mybluemix.net', function (req, res) {
+app.get('/', function (req, res) {
    res.cookie('foo', 'bar');
 });
 
