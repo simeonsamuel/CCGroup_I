@@ -15,6 +15,8 @@ var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3'
 
 var express = require('express');
 var app = express();
+var session = require ('cookie-session');
+var helmet = require('helmet');
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
@@ -76,6 +78,23 @@ app.use('/', express.static(__dirname + '/chat'));
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/chat/index.html');
 });
+
+
+app.use(helmet());
+
+var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
+app.use(session({
+        name: 'session',
+        keys: ['key1', 'key2'],
+        cookie: { secure: true,
+            httpOnly: true,
+            domain: 'https://gifted-pike.eu-de.mybluemix.net',
+            path: '/',
+            expires: expiryDate
+        }
+    })
+);
+
 
 /**
  * function to listen to the connection of the socket and react to events from user
