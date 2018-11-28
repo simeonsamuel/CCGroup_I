@@ -6,10 +6,8 @@
 //Facedetection requirements
 var fs = require('fs');
 var path = require('path');
-var async = require('async');
 var uuid = require('uuid');
 var os = require('os');
-var asyncTime = 40000;
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 
 
@@ -350,28 +348,21 @@ function checkFace(base64PIC) {
         fs.writeFileSync(temp, resource.data);
         params.images_file = fs.createReadStream(temp);
 
-        var methods = [];
         params.threshold = 0.5; //So the classifers only show images with a confindence level of 0.5 or higher
-        methods.push('detectFaces');
-        async.parallel(methods.map(function(method) {
-            var fn = VR[method].bind(VR, params);
-            return async.reflect(async.timeout(fn, asyncTime));
-        }), function(err, results) {
-            // combine the results
-            results.map(function(result) {
-                if (result.value && result.value.length) {
-                    result.value = result.value[0];
-                }
-                if(result.value["images"][0]["faces"].length>0){
-                    validProfile = true;
-                    console.log("GESICHT ERKANNT");
-                    resolve(true);
-                }else{
-                    console.log("KEIN GESICHT");
-                    reject(false);
-                }
-                return result;
-            })
+
+        VR.detectFaces(params,function (err,response) {
+            if (response.value && response.value.length) {
+                response.value = response.value[0];
+            }
+            if(response["images"][0]["faces"].length>0){
+                validProfile=true;
+                console.log("GESICHT ERKANNT");
+                resolve(true);
+            }else{
+                console.log("KEIN GESICHT GEFUNDEN!");
+                reject(false);
+            }
+            return response;
         });
     });
 }
