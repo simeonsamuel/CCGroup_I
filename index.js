@@ -10,7 +10,6 @@ var uuid = require('uuid');
 var os = require('os');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 
-
 var express = require('express');
 var app = express();
 // var session = require ('cookie-session');
@@ -30,7 +29,6 @@ app.enable('trust proxy'); //needed to redirect to https later
 var usernames = [];
 var socketids = [];
 var loginpass;
-var usergefunden = false;
 var connStr = 'DRIVER={DB2};' +
     'HOSTNAME=dashdb-txn-sbox-yp-lon02-01.services.eu-gb.bluemix.net;' +
     'PORT=50000;' +
@@ -127,71 +125,63 @@ io.on('connection', function (socket) {
      *  Then feedback about user is send back to client side: true or false as data
      *  (connect message)
      */
-    socket.on('new user', function (data) {
-        socket.username = data.registerusername;
+    socket.on('new user', function (user) {
+        socket.username = user.registerusername;
 
         db.open(connStr, function (err, conn) {
             if (err) return console.log(err);
 
-            var sql = "SELECT * FROM USER_TABLE";
+            //var sql = "SELECT COUNT(1) FROM USER_TABLE WHERE BENUTZERNAME = '" + socket.username + "' ;";
+            var sql = "SELECT * FROM USER_TABLE WHERE BENUTZERNAME = '" + socket.username + "';";
 
             conn.query(sql, function (err, data) {
-                console.log("0");
                 if (err) console.log(err);
                 else {
-                    data.forEach(function (tablerow) {
-                        console.log(tablerow.BENUTZERNAME + " " + socket.username);
-                        if (tablerow.BENUTZERNAME == socket.username) {
-                            usergefunden = true;
-                            //callback(false);
-                            socket.emit('userexists', true);
+                    console.log(data);
+                    if (data.length > 0){ //if user is found
+                        socket.emit('userexists', true);
+                    }
+                    else {
+                        if(user.profile.length>0){
+                            checkFace(user.profile).then(()=>{
+
+                                if(validProfile){
+                                    db.open(connStr, function (err, conn) {
+                                        if (err) return console.log(err);
+                                        var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(user.registerpasswort) + "')";
+                                        conn.query(sq2, function (err, data) {
+
+                                            if (err) console.log(err);
+                                            else console.log(data);
+
+                                            //callback(true);
+                                            socket.emit('userexists', false);
+                                            usernames.push(socket.username);
+                                            socketids.push(socket.id);
+                                            io.emit('dis-connect message', socket.username + ' has connected ');
+                                            console.log(socket.username + ' has connected');
+
+                                            conn.close(function () {
+                                                console.log('done: insert row in database');
+                                            });
+                                        });
+                                    });
+                                }else{
+                                    socket.emit('ProfileError',{});
+                                }
+
+                            })
+                                .catch((error)=>
+                                    socket.emit('ProfileError',{})
+                                );
                         }
-                    })
+                    }
                 }
                 conn.close(function () {
                     console.log('done: checked if username exists in database');
                 });
             });
-
-            if (usergefunden === false) {
-
-                if(data.profile.length>0){
-                    checkFace(data.profile).then(()=>{
-
-                        if(validProfile){
-                            db.open(connStr, function (err, conn) {
-                                if (err) return console.log(err);
-                                var sq2 = "INSERT INTO USER_TABLE (BENUTZERNAME,PASSWORT) VALUES ('" + socket.username + "','" + sha256(data.registerpasswort) + "')";
-                                conn.query(sq2, function (err, data) {
-
-                                    if (err) console.log(err);
-                                    else console.log(data);
-
-                                    //callback(true);
-                                    socket.emit('userexists', false);
-                                    usernames.push(socket.username);
-                                    socketids.push(socket.id);
-                                    io.emit('dis-connect message', socket.username + ' has connected ');
-                                    console.log(socket.username + ' has connected');
-
-                                    conn.close(function () {
-                                        console.log('done: insert row in database');
-                                    });
-                                });
-                            });
-                        }else{
-                            socket.emit('ProfileError',{});
-                        }
-
-                    })
-                        .catch((error)=>
-                            socket.emit('ProfileError',{})
-                        );
-                }
-            }
-            ;
         });
-        usergefunden = false;
     });
 
 
