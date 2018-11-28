@@ -15,8 +15,8 @@ var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3'
 
 var express = require('express');
 var app = express();
-var session = require ('cookie-session');
-var helmet = require('helmet');
+// var session = require ('cookie-session');
+const helmet = require('helmet');
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
@@ -79,10 +79,12 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/chat/index.html');
 });
 
+//Solution for: Missing or insecure "X-XSS-Protection" header
+app.use(helmet.xssFilter());
 
-app.use(helmet());
 
-var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
+//Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie
+/* var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
 app.use(session({
         name: 'session',
         keys: ['key1', 'key2'],
@@ -93,7 +95,13 @@ app.use(session({
             expires: expiryDate
         }
     })
-);
+); */
+
+app.use(require('express-secure-cookie'));
+
+app.get('*', function (req, res) {
+   res.cookie('foo', 'bar');
+});
 
 
 /**
