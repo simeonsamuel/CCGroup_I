@@ -539,6 +539,15 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             alert("Kein PRofilbild!");
         });
 
+        socket.on('userexists', function (status) {
+            if(status===false){
+                $('#registerContent').hide();
+                $('#chatDiv').show();
+            }else {
+                $usernameError.html('Username or Password is incorrect or you are already logged in. Please try again or register.');
+            }
+        });
+
         /**
          * function to send a list of the users that are currently logged into the server
          * only to user that requests with the list command
@@ -584,12 +593,12 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             e.preventDefault();
             alert($registerpasswortInput.value);
             socket.emit('new user', {profile: profilePicture, registerusername: $registerusernameInput.val(), registerpasswort: $registerpasswortInput.value}, function (data) {
-                if (data) {
+                /*if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
                 } else {
                     $usernameError.html('Username you have chosen is taken. Please choose another one.');
-                }
+                }*/
             });
 
         });

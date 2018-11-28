@@ -79,11 +79,7 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/chat/index.html');
 });
 
-//Solution for: Missing or insecure "X-XSS-Protection" header
-app.use(helmet.xssFilter());
-
-
-//Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie
+//Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (1)
 /* var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
 app.use(session({
         name: 'session',
@@ -97,11 +93,28 @@ app.use(session({
     })
 ); */
 
+//Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (2)
 app.use(require('express-secure-cookie'));
-
 app.get('/', function (req, res) {
    res.cookie('foo', 'bar');
 });
+
+//Solution For: Missing or insecure HTTP Strict-Transport-Security Header
+const sixtyDays = 5184000;
+app.use(helmet.hsts({
+    maxAge: sixtyDays
+}));
+
+//Solution for: Missing or insecure "X-XSS-Protection" header
+app.use(helmet.xssFilter());
+
+//Solution for: Missing or insecure "Content-Security-Policy" header
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'", 'https://gifted-pike.eu-de.mybluemix.net/'],
+        styleSrc: ["'self'", 'https://gifted-pike.eu-de.mybluemix.net/']
+    }
+}));
 
 
 /**
@@ -115,7 +128,7 @@ io.on('connection', function (socket) {
      *  Then feedback about user is send back to client side: true or false as data
      *  (connect message)
      */
-    socket.on('new user', function (data, callback) {
+    socket.on('new user', function (data) {
         socket.username = data.registerusername;
 
         db.open(connStr, function (err, conn) {
@@ -131,7 +144,8 @@ io.on('connection', function (socket) {
                         console.log(tablerow.BENUTZERNAME + " " + socket.username);
                         if (tablerow.BENUTZERNAME == socket.username) {
                             usergefunden = true;
-                            callback(false);
+                            //callback(false);
+                            socket.emit('userexists', true);
                         }
                     })
                 }
@@ -154,7 +168,8 @@ io.on('connection', function (socket) {
                                     if (err) console.log(err);
                                     else console.log(data);
 
-                                    callback(true);
+                                    //callback(true);
+                                    socket.emit('userexists', false);
                                     usernames.push(socket.username);
                                     socketids.push(socket.id);
                                     io.emit('dis-connect message', socket.username + ' has connected ');
@@ -217,7 +232,6 @@ io.on('connection', function (socket) {
                     if (loginusergefunden === true) {
                         callback(true); //Enter chatroom when entered Username and Passwort is found in Database
                     } else {
-                        console.log("JUNGE WTF");
                         callback(false)
                     }
 
