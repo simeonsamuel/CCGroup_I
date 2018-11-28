@@ -15,6 +15,7 @@ var express = require('express');
 var app = express();
 // var session = require ('cookie-session');
 const helmet = require('helmet');
+const xssFilter = require('x-xss-protection')
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
@@ -104,7 +105,7 @@ app.use(helmet.hsts({
 }));
 
 //Solution for: Missing or insecure "X-XSS-Protection" header
-app.use(helmet.xssFilter());
+app.use(xssFilter({ setOnOldIE: true }));
 
 //Solution for: Missing or insecure "Content-Security-Policy" header
 app.use(helmet.contentSecurityPolicy({
@@ -342,7 +343,7 @@ function checkFace(base64PIC) {
         var params = {
             images_file: null
         };
-        // write the base64 image to a temp fil
+        // write the base64 image to a temp file
         var resource = parseBase64Image(base64PIC);
         var temp = path.join(os.tmpdir(), uuid.v1() + '.' + resource.type);
         fs.writeFileSync(temp, resource.data);
