@@ -3,18 +3,15 @@
  * Name: Simeon Samuel Matriculation Nr.: 761386
  */
 
+var express = require('express');
+var app = express();
+
 //Facedetection requirements
 var fs = require('fs');
 var path = require('path');
 var uuid = require('uuid');
 var os = require('os');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
-
-var express = require('express');
-var app = express();
-// var session = require ('cookie-session');
-const helmet = require('helmet');
-const xssFilter = require('x-xss-protection')
 var http = require('http').Server(app);
 var http2 = require("http");
 var io = require('socket.io')(http);
@@ -22,10 +19,7 @@ var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
 var db = require('ibm_db');
 var validProfile= false;
-
-
 app.enable('trust proxy'); //needed to redirect to https later
-
 var usernames = [];
 var socketids = [];
 var loginpass;
@@ -36,19 +30,6 @@ var connStr = 'DRIVER={DB2};' +
     'UID=wrf22173;' +
     'PWD=l6z+2325rvgfgv2d';
 
-var options = {
-    "method": "POST",
-    "hostname": "adoring-engelbart.eu-de.mybluemix.net",
-    "path": [
-        "tone"
-    ],
-    "headers": {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
-        "Postman-Token": "b34b62d9-5af6-43a0-8b9c-a1b6a50b4066"
-    }
-};
-
 var VR = new VisualRecognitionV3({
     version: '2018-03-19',
     url: 'https://gateway.watsonplatform.net/visual-recognition/api',
@@ -56,28 +37,19 @@ var VR = new VisualRecognitionV3({
     use_unauthenticated: false
 });
 
-//Redirecting to https if not secure
-app.use(function (req, res, next) {
-    if (req.secure || process.env.BLUEMIX_REGION === undefined) {
-        next();
-    } else {
-        console.log('redirecting to https');
-        res.redirect('https://' + req.headers.host + req.url);
-    }
-});
 
 /**
  * function to get the correct file(index) (+ correct directory)
  * sends html-page to the given path
  */
-
 app.use('/', express.static(__dirname + '/chat'));
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/chat/index.html');
 });
 
 //Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (1)
-/* var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
+/* var session = require ('cookie-session');
+var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
 app.use(session({
         name: 'session',
         keys: ['key1', 'key2'],
@@ -93,17 +65,24 @@ app.use(session({
 //Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (2)
 app.use(require('express-secure-cookie'));
 app.get('/', function (req, res) {
-   res.cookie('foo', 'bar');
+    res.cookie('foo', 'bar');
 });
 
+
+var helmet = require('helmet');
+app.use(helmet());
+
 //Solution For: Missing or insecure HTTP Strict-Transport-Security Header
-const sixtyDays = 5184000;
+const sixYearsInSec = 189216210;
 app.use(helmet.hsts({
-    maxAge: sixtyDays
+    maxAge: sixYearsInSec
 }));
 
+
 //Solution for: Missing or insecure "X-XSS-Protection" header
+var xssFilter = require('x-xss-protection');
 app.use(xssFilter({ setOnOldIE: true }));
+
 
 //Solution for: Missing or insecure "Content-Security-Policy" header
 app.use(helmet.contentSecurityPolicy({
@@ -112,6 +91,26 @@ app.use(helmet.contentSecurityPolicy({
         styleSrc: ["'self'", 'https://gifted-pike.eu-de.mybluemix.net/']
     }
 }));
+
+//Redirecting to https if not secure
+app.use(function (req, res, next) {
+    if (req.secure || process.env.BLUEMIX_REGION === undefined) {
+        // Website you wish to allow to connect
+        //res.setHeader('Access-Control-Allow-Origin', 'https://gifted-pike.eu-de.mybluemix.net/');
+        // Request methods you wish to allow
+        //res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        // Request headers you wish to allow
+        //res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        // Set to true if you need the website to include cookies in the requests sent
+        // to the API (e.g. in case you use sessions)
+        //res.setHeader('Access-Control-Allow-Credentials', true);
+
+        next();
+    } else {
+        console.log('redirecting to https');
+        res.redirect('https://' + req.headers.host + req.url);
+    }
+});
 
 
 /**
