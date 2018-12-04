@@ -4,360 +4,373 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>SIMPLE CHAT SERVER</title>
-<style>
-	*{ margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <title>SIMPLE CHAT SERVER</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    html {
-      width: 100%;
-      height:100%;
-    }
-    body {
-      margin-top: 10px;
-      width: 100%;
-      height: 97%;
-      min-width: 605px;
-      font: 13px Helvetica, Arial;
-    }
+        html {
+            width: 100%;
+            height: 100%;
+        }
 
-    .headline{
-      color: #111;
-      font-family: Helvetica, sans-serif;
-      font-size: 20px;
-      font-weight: bolder;
-      line-height: 50px;
-      margin: 0 0 0;
-      padding: 2px 30px;
-      text-align: center;
-    }
-    #headBig{
-      margin-top: 5%;
-      font-size: 45px;
-      text-transform: uppercase;
-    }
-    #headSmall{
-      font-size: 26px;
-    }
+        body {
+            margin-top: 10px;
+            width: 100%;
+            height: 97%;
+            min-width: 605px;
+            font: 13px Helvetica, Arial;
+        }
 
-    #nameError{
-      color: red;
-      font-weight: bold;
-      font-size: 14px;
-    }
+        .headline {
+            color: #111;
+            font-family: Helvetica, sans-serif;
+            font-size: 20px;
+            font-weight: bolder;
+            line-height: 50px;
+            margin: 0 0 0;
+            padding: 2px 30px;
+            text-align: center;
+        }
 
-    .usernameFormat{
-      font-size: 14px;
-      font-weight: bold;
-    }
+        #headBig {
+            margin-top: 5%;
+            font-size: 45px;
+            text-transform: uppercase;
+        }
 
-    .username{
-      width:330px;
-      border:2px solid #aaa;
-      border-top-left-radius: 20px;
-      border-bottom-left-radius: 20px;
-      border-top-right-radius: 5px;
-      border-bottom-right-radius: 5px;
-      outline:none;
-      padding:8px;
-      padding-left: 15px;
-      box-sizing:border-box;
-      transition:.3s;
-      height: 40px;
-      margin-top: 13px;
-      font-weight: bold;
-    }
+        #headSmall {
+            font-size: 26px;
+        }
 
-    .username:focus{
-      border-color:#FFD700;
-      box-shadow:0 0 8px 0 #FFA500;
-    }
+        #nameError {
+            color: red;
+            font-weight: bold;
+            font-size: 14px;
+        }
 
-    .username:focus:invalid{
-      border-color: red;
-      box-shadow:0 0 8px 0 red;
-    }
+        .usernameFormat {
+            font-size: 14px;
+            font-weight: bold;
+        }
 
-    .yellowbutton {
-      background-image: linear-gradient(#FFD700, #FFA500);
-      border-top-right-radius: 20px;
-      border-bottom-right-radius: 20px;
-      border-bottom-left-radius: 5px;
-      border-top-left-radius: 5px;
-      cursor: pointer;
-      color: white;
-      font-family: "Helvetica";
-      text-transform: uppercase;
-      font-weight: bolder;
-      border: 0px;
-      height: 40px;
-      min-width: 105px;
-      width: 105px;
-      font-size: 17px;
-      margin-left: 3px;
-      padding-right: 7px;
-      vertical-align: middle;
-      margin-bottom: 3px;
-    }
+        .username {
+            width: 330px;
+            border: 2px solid #aaa;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            outline: none;
+            padding: 8px;
+            padding-left: 15px;
+            box-sizing: border-box;
+            transition: .3s;
+            height: 40px;
+            margin-top: 13px;
+            font-weight: bold;
+        }
 
-    .yellowbutton:hover {
-      background-image: linear-gradient(#FFD700, #FFA500);
-      background-color: #FFA500;
-    }
+        .username:focus {
+            border-color: #FFD700;
+            box-shadow: 0 0 8px 0 #FFA500;
+        }
 
-    #registerContent{
-      text-align: center;
-    }
+        .username:focus:invalid {
+            border-color: red;
+            box-shadow: 0 0 8px 0 red;
+        }
 
-    #chatDiv{
-      display: none;
-      max-height: 90%;
-      height: 90%;
-    }
+        .yellowbutton {
+            background-image: linear-gradient(#FFD700, #FFA500);
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            border-bottom-left-radius: 5px;
+            border-top-left-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-family: "Helvetica";
+            text-transform: uppercase;
+            font-weight: bolder;
+            border: 0px;
+            height: 40px;
+            min-width: 105px;
+            width: 105px;
+            font-size: 17px;
+            margin-left: 3px;
+            padding-right: 7px;
+            vertical-align: middle;
+            margin-bottom: 3px;
+        }
 
-    #messages {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      margin-bottom: 90px;
-    }
+        .yellowbutton:hover {
+            background-image: linear-gradient(#FFD700, #FFA500);
+            background-color: #FFA500;
+        }
 
-    #messages li{
-      padding: 5px 10px;
-      font-weight: bold;
-      width: fit-content;
-      max-width: 97%;
-      margin-top: 10px;
-      margin-left: 1.5%;
-      font-size: 14px;
-      border: 2px solid;
-      border-radius: 15px;
-      height: fit-content;
-      word-wrap: break-word;
-    }
+        #registerContent {
+            text-align: center;
+        }
 
-    #messages a{
-      padding: 5px 10px;
-      font-weight: bold;
-      width: fit-content;
-      max-width: 97%;
-      margin-top: 10px;
-      margin-left: 1.5%;
-      font-size: 14px;
-      border: 2px solid;
-      border-radius: 15px;
-      height: fit-content;
-      word-wrap: break-word;
-      display: block;
-    }
+        #chatDiv {
+            display: none;
+            max-height: 90%;
+            height: 90%;
+        }
 
-    .dis-connectMsgClass{
-      color: red;
-      border-color: red;
-      width: fit-content;
-    }
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            margin-bottom: 90px;
+        }
 
-    .chatMsgClass{
-      border-color: #404040;
-      color: #404040;
-      width: fit-content;
-    }
+        #messages li {
+            padding: 5px 10px;
+            font-weight: bold;
+            width: fit-content;
+            max-width: 97%;
+            margin-top: 10px;
+            margin-left: 1.5%;
+            font-size: 14px;
+            border: 2px solid;
+            border-radius: 15px;
+            height: fit-content;
+            word-wrap: break-word;
+        }
 
-    .privateChatMsgClass{
-      border-color: #A5A5A5;
-      color: #A5A5A5;
-      width: fit-content;
-    }
+        #messages a {
+            padding: 5px 10px;
+            font-weight: bold;
+            width: fit-content;
+            max-width: 97%;
+            margin-top: 10px;
+            margin-left: 1.5%;
+            font-size: 14px;
+            border: 2px solid;
+            border-radius: 15px;
+            height: fit-content;
+            word-wrap: break-word;
+            display: block;
+        }
 
-    .privateMsgErrorClass{
-      border-color: #ff8c66;
-      color: #ff8c66;
-      width: fit-content;
-    }
+        .dis-connectMsgClass {
+            color: red;
+            border-color: red;
+            width: fit-content;
+        }
 
-    .listClass{
-      border-color: #6699ff;
-      color: #6699ff;
-      width: fit-content;
-    }
+        .chatMsgClass {
+            border-color: #404040;
+            color: #404040;
+            width: fit-content;
+        }
 
-    .mediaFileClass{
-      color: blue;
-      text-decoration: underline;
-      border-color: black;
-      width: fit-content;
-      margin-top: 10px;
-    }
+        .privateChatMsgClass {
+            border-color: #A5A5A5;
+            color: #A5A5A5;
+            width: fit-content;
+        }
 
-    #msgInputDiv {
-      background: #000;
-      padding: 3px;
-      position: fixed;
-      width: 100%;
-      min-height: 42px;
-      bottom: 37px;
-      min-width: 500px;
-    }
+        .privateMsgErrorClass {
+            border-color: #ff8c66;
+            color: #ff8c66;
+            width: fit-content;
+        }
 
-    .msgInput{
-      border: 0;
-      border-radius: 18px;
-      padding: 10px;
-      width: 79.5%;
-      margin-right: .5%;
-      margin-left: 1px;
-      outline:none;
-    }
+        .listClass {
+            border-color: #6699ff;
+            color: #6699ff;
+            width: fit-content;
+        }
 
-    #fileUploadDiv {
-      background: #000;
-      color: white ;
-      padding: 3px;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      height: 4.5%;
-      min-height: 42px;
-      min-width: 500px;
-    }
+        .mediaFileClass {
+            color: blue;
+            text-decoration: underline;
+            border-color: black;
+            width: fit-content;
+            margin-top: 10px;
+        }
 
-    .sendMsgBtn {
-      cursor: pointer;
-      color: white;
-      text-transform: uppercase;
-      font-weight: bolder;
-      font-size: 19px;
-      font-family: "Helvetica";
-      background-image: linear-gradient(#FFD700, #FFA500);
-      height: 36px;
-      width: 92px;
-      min-width: 65px;
-      margin-bottom: 2px;
-      margin-left: 1px;
-      border: 0px;
-      border-radius: 20px;
-      padding: 8px;
-      padding-right: 10px;
-      vertical-align: middle;
-      outline:none;
-    }
+        #msgInputDiv {
+            background: #000;
+            padding: 3px;
+            position: fixed;
+            width: 100%;
+            min-height: 42px;
+            bottom: 37px;
+            min-width: 500px;
+        }
 
-    #Mood {
-      float: left;
-      width: 20px;
-      height: 20px;
-      margin: 5px;
-      border: 1px solid rgba(0, 0, 0, .2);
-      background-color: yellow;
-    }
+        .msgInput {
+            border: 0;
+            border-radius: 18px;
+            padding: 10px;
+            width: 79.5%;
+            margin-right: .5%;
+            margin-left: 1px;
+            outline: none;
+        }
 
-    #registerusername{
-        width: 435px;
-        border-bottom-right-radius: 20px;
-        border-top-right-radius: 20px;
-    }
+        #fileUploadDiv {
+            background: #000;
+            color: white;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 4.5%;
+            min-height: 42px;
+            min-width: 500px;
+        }
 
-    #username{
-        width: 435px;
-        border-bottom-right-radius: 20px;
-        border-top-right-radius: 20px;
-    }
+        .sendMsgBtn {
+            cursor: pointer;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bolder;
+            font-size: 19px;
+            font-family: "Helvetica";
+            background-image: linear-gradient(#FFD700, #FFA500);
+            height: 36px;
+            width: 92px;
+            min-width: 65px;
+            margin-bottom: 2px;
+            margin-left: 1px;
+            border: 0px;
+            border-radius: 20px;
+            padding: 8px;
+            padding-right: 10px;
+            vertical-align: middle;
+            outline: none;
+        }
 
-    #registerpasswort{
-      margin-top: 0px;
-      margin-bottom: 25px;
-    }
+        #Mood {
+            float: left;
+            width: 20px;
+            height: 20px;
+            margin: 5px;
+            border: 1px solid rgba(0, 0, 0, .2);
+            background-color: yellow;
+        }
 
-    #choosenProfilepic{
-      max-width: 130px;
-      max-height: 130px;
-      min-height: 130px;
-      min-width: 130px;
-      border-radius: 50%;
-      border: 2px solid #aaa;
-      top: 10px;
-      right: 267px;
-    }
+        #registerusername {
+            width: 435px;
+            border-bottom-right-radius: 20px;
+            border-top-right-radius: 20px;
+        }
 
-    #profilePicture{
-      font-size: 15px;
-      top: 28px;
-      left: 233px;
-    }
+        #username {
+            width: 435px;
+            border-bottom-right-radius: 20px;
+            border-top-right-radius: 20px;
+        }
 
-    #removePicButton{
-      border-radius: 25px;
-      width: 132px;
-      height: 39px;
-      font-size: 14px;
-      top: 81px;
-      left: 227px;
-    }
+        #registerpasswort {
+            margin-top: 0px;
+            margin-bottom: 25px;
+        }
 
-    #profilePicDiv{
-      height: 155px;
-      width: 449px;
-      border: solid 2px #aaa;
-      border-radius: 38px;
-      left: 242px;
-    }
+        #choosenProfilepic {
+            max-width: 130px;
+            max-height: 130px;
+            min-height: 130px;
+            min-width: 130px;
+            border-radius: 50%;
+            border: 2px solid #aaa;
+            top: 10px;
+            right: 267px;
+        }
 
-</style>
+        #profilePicture {
+            font-size: 15px;
+            top: 28px;
+            left: 233px;
+        }
+
+        #removePicButton {
+            border-radius: 25px;
+            width: 132px;
+            height: 39px;
+            font-size: 14px;
+            top: 81px;
+            left: 227px;
+        }
+
+        #profilePicDiv {
+            height: 155px;
+            width: 449px;
+            border: solid 2px #aaa;
+            border-radius: 38px;
+            left: 242px;
+        }
+
+    </style>
 </head>
 <body>
 <div id="registerContent">
-  <p class="headline" id="headBig">A simple chat server</p>
-  <p class="headline" id="headSmall">A project for our cloud computing course.</p>
-  <br><br>
-
-  <p id="nameError"></p>
-  <form id="usernameForm">
-      <p class="headline">Login to chat with others.</p>
-    <input class="username" id="username" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder="Username" size="35">
-    <br>
-    <input class="username" id="passwort" type="password" name="pwd" autocomplete="off" title="password" required placeholder="Password" size="35">
-    <input class="yellowbutton" id="button" type="submit" value="login">
-  </form>
-  <br><br><br>
-  <form id="registerForm">
-    <p class="headline">Register with a username and password.</p>
-    <label class="usernameFormat">Username format: Only letters and numbers. At least 3 characters long.</label>
-      <br><br>
-    <label class="usernameFormat">Note: Profile pic needs to be a human face.</label>
+    <p class="headline" id="headBig">A simple chat server</p>
+    <p class="headline" id="headSmall">A project for our cloud computing course.</p>
     <br><br>
-      <input class="username" id="registerusername" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}" title="Only letters and numbers. At least 3 characters long." required placeholder="Username" size="35">
-      <br><br>
-      <input type="file" id="profilePicture" name="file" accept="image/png, image/jpeg, image/gif">
-    <br><br>
-    <input class="username" id="registerpasswort" type="password" name="pwd" autocomplete="off" title="password" required placeholder="Password" size="35">
-    <input class="yellowbutton" id="registerbutton" type="submit" value="register">
-    <br>
 
-  </form>
+    <p id="nameError"></p>
+    <form id="usernameForm">
+        <p class="headline">Login to chat with others.</p>
+        <input class="username" id="username" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}"
+               title="Only letters and numbers. At least 3 characters long." required placeholder="Username" size="35">
+        <br>
+        <input class="username" id="passwort" type="password" name="pwd" autocomplete="off" title="password" required
+               placeholder="Password" size="35">
+        <input class="yellowbutton" id="button" type="submit" value="login">
+    </form>
+    <br><br><br>
+    <form id="registerForm">
+        <p class="headline">Register with a username and password.</p>
+        <label class="usernameFormat">Username format: Only letters and numbers. At least 3 characters long.</label>
+        <br><br>
+        <label class="usernameFormat">Note: Profile pic needs to be a human face.</label>
+        <br><br>
+        <input class="username" id="registerusername" type="text" autocomplete="off" pattern="[a-zA-Z0-9]{3,30}"
+               title="Only letters and numbers. At least 3 characters long." required placeholder="Username" size="35">
+        <br><br>
+        <input type="file" id="profilePicture" name="file" accept="image/png, image/jpeg, image/gif">
+        <br><br>
+        <input class="username" id="registerpasswort" type="password" name="pwd" autocomplete="off" title="password"
+               required placeholder="Password" size="35">
+        <input class="yellowbutton" id="registerbutton" type="submit" value="register">
+        <br>
+
+    </form>
 </div>
 
 <div id="chatDiv">
-  <ul id="messages"></ul>
-  <form action="" id="msgInputForm">
-    <div id="msgInputDiv">
+    <ul id="messages"></ul>
+    <form action="" id="msgInputForm">
+        <div id="msgInputDiv">
 
-      <input class="msgInput" id="m" autocomplete="off" required/><button class="sendMsgBtn" >Send</button>
+            <input class="msgInput" id="m" autocomplete="off" required/>
+            <button class="sendMsgBtn">Send</button>
 
-    </div>
-    <div id="fileUploadDiv">
-      <label for="file">Choose file to upload</label>
-      <input type="file" id="file" name="file" name="file">
-      <button class="sendMsgBtn" >Send</button>
-      <!--onclick="sendfile()"-->
+        </div>
+        <div id="fileUploadDiv">
+            <label for="file">Choose file to upload</label>
+            <input type="file" id="file" name="file" name="file">
+            <button class="sendMsgBtn">Send</button>
+            <!--onclick="sendfile()"-->
 
-      <div id="Mood"></div>
-    </div>
-  </form>
+            <div id="Mood"></div>
+        </div>
+    </form>
 </div>
-<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-<!-- Error: this resource is not eligible for integrity checks. See https://enable-cors.org/server.html -->
- <script src="https://code.jquery.com/jquery-latest.min.js" integrity="sha384-UM1JrZIpBwVf5jj9dTKVvGiiZPZTLVoq4sfdvIe9SBumsvCuv6AHDNtEiIb5h1kU" crossorigin="anonymous"></script> 
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" integrity="sha384-fj9YEHKNa/e0CNquG4NcocjoyMATYo1k2Ff5wGB42C/9AwOlJjDoySPtNJalccfI" crossorigin="anonymous"></script> 
+<!--<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>-->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"
+        integrity="sha384-UM1JrZIpBwVf5jj9dTKVvGiiZPZTLVoq4sfdvIe9SBumsvCuv6AHDNtEiIb5h1kU"
+        crossorigin="anonymous"></script>
 <script>
     var socket = io();
     $(function () {
@@ -373,7 +386,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         var privatemsg;
         var usernameFound = false;
         var fileReader = new FileReader();
-        var profileAdded=false;
+        var profileAdded = false;
         var profilePicture;
 
 
@@ -532,10 +545,10 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         });
 
         socket.on('userexists', function (status) {
-            if(status===false){
+            if (status === false) {
                 $('#registerContent').hide();
                 $('#chatDiv').show();
-            }else {
+            } else {
                 $usernameError.html('Username or Password is incorrect or you are already logged in. Please try again or register.');
             }
         });
@@ -562,7 +575,10 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         $usernameForm.submit(function (e) {
             e.preventDefault();
             alert($passwortInput.value);
-            socket.emit('login user', {loginusername: $usernameInput.val(), loginpasswort: $passwortInput.value}, function (data) {
+            socket.emit('login user', {
+                loginusername: $usernameInput.val(),
+                loginpasswort: $passwortInput.value
+            }, function (data) {
                 if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
@@ -584,7 +600,11 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         $registerForm.submit(function (e) {
             e.preventDefault();
             alert($registerpasswortInput.value);
-            socket.emit('new user', {profile: profilePicture, registerusername: $registerusernameInput.val(), registerpasswort: $registerpasswortInput.value}, function (data) {
+            socket.emit('new user', {
+                profile: profilePicture,
+                registerusername: $registerusernameInput.val(),
+                registerpasswort: $registerpasswortInput.value
+            }, function (data) {
                 /*if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
@@ -594,11 +614,11 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             });
 
         });
-        $('#profilePicture').change(function(e){
+        $('#profilePicture').change(function (e) {
             profilePicture = e.target.files[0];
             fileReader.readAsDataURL(profilePicture);
-            profileAdded=true;
-            fileReader.onload  = function(){
+            profileAdded = true;
+            fileReader.onload = function () {
                 profilePicture = fileReader.result;
             }
         });
@@ -631,7 +651,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         }
     }
 
-    function removePic(){
+    function removePic() {
         $('#choosenProfilepic').attr('src', 'avatar.jpeg');
         dataFile = null;
     }
@@ -640,11 +660,9 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         readURL(this);
     });
 
-    function showFiledata(input){
+    function showFiledata(input) {
         console.log(dataFile);
     }
-
-
 </script>
 </body>
 </html>
