@@ -34,6 +34,18 @@ var connStr = 'DRIVER={DB2};' +
     'UID=wrf22173;' +
     'PWD=l6z+2325rvgfgv2d';
 
+var options = {
+    "method": "POST",
+    "hostname": "gifted-pike.eu-de.mybluemix.net",
+    "path": [
+        "tone"
+    ],
+    "headers": {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache",
+        "Postman-Token": "b34b62d9-5af6-43a0-8b9c-a1b6a50b4066"
+    }
+};
 
 var VR = new VisualRecognitionV3({
     version: '2018-03-19',
@@ -42,26 +54,7 @@ var VR = new VisualRecognitionV3({
     use_unauthenticated: false
 });
 
-//Redirecting to https if not secure
-app.use(function (req, res, next) {
-    if (req.secure || process.env.BLUEMIX_REGION === undefined) {
-        //cros fehler
-        // Website you wish to allow to connect
-        res.setHeader('Access-Control-Allow-Origin', 'https://gifted-pike.eu-de.mybluemix.net/');
-        // Request methods you wish to allow
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-        // Request headers you wish to allow
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        // Set to true if you need the website to include cookies in the requests sent
-        // to the API (e.g. in case you use sessions)
-        res.setHeader('Access-Control-Allow-Credentials', true);
 
-        next();
-    } else {
-        console.log('redirecting to https');
-        res.redirect('https://' + req.headers.host + req.url);
-    }
-});
 
 /**
  * function to get the correct file(index) (+ correct directory)
@@ -97,13 +90,13 @@ app.get('/', function (req, res) {
 var helmet = require('helmet');
 app.use(helmet());
 
-//HSTS
-const sixtyDays = 15768001;
-app.use(helmet({
-    maxAge: sixtyDays
+//Solution For: Missing or insecure HTTP Strict-Transport-Security Header
+const sixYearsInSec = 189216210;
+app.use(helmet.hsts({
+    maxAge: sixYearsInSec
 }));
 
-//XSS
+//Solution for: Missing or insecure "X-XSS-Protection" header
 var xssFilter = require('x-xss-protection');
 app.use(xssFilter({ setOnOldIE: true }));
 
@@ -114,6 +107,27 @@ app.use(xssFilter({ setOnOldIE: true }));
         styleSrc: ["'self'", 'https://gifted-pike.eu-de.mybluemix.net/']
     }
 }));*/
+
+//Redirecting to https if not secure
+app.use(function (req, res, next) {
+    if (req.secure || process.env.BLUEMIX_REGION === undefined) {
+        //cros fehler
+        // Website you wish to allow to connect
+        res.setHeader('Access-Control-Allow-Origin', 'https://gifted-pike.eu-de.mybluemix.net/');
+        // Request methods you wish to allow
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+        // Request headers you wish to allow
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        // Set to true if you need the website to include cookies in the requests sent
+        // to the API (e.g. in case you use sessions)
+        res.setHeader('Access-Control-Allow-Credentials', true);
+
+        next();
+    } else {
+        console.log('redirecting to https');
+        res.redirect('https://' + req.headers.host + req.url);
+    }
+});
 
 
 /**
