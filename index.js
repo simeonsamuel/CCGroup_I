@@ -34,18 +34,6 @@ var connStr = 'DRIVER={DB2};' +
     'UID=wrf22173;' +
     'PWD=l6z+2325rvgfgv2d';
 
-var options = {
-    "method": "POST",
-    "hostname": "adoring-engelbart.eu-de.mybluemix.net",
-    "path": [
-        "tone"
-    ],
-    "headers": {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
-        "Postman-Token": "b34b62d9-5af6-43a0-8b9c-a1b6a50b4066"
-    }
-};
 
 var VR = new VisualRecognitionV3({
     version: '2018-03-19',
