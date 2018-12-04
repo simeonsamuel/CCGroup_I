@@ -541,7 +541,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         });
 
         socket.on('ProfileError', function () {
-            alert("Kein PRofilbild!");
+            alert("Kein Profilbild!");
         });
 
         socket.on('userexists', function (status) {
@@ -574,7 +574,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
 
         $usernameForm.submit(function (e) {
             e.preventDefault();
-            alert($passwortInput.value);
+            //alert($passwortInput.value);
             socket.emit('login user', {
                 loginusername: $usernameInput.val(),
                 loginpasswort: $passwortInput.value

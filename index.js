@@ -48,14 +48,9 @@ app.use(xssFilter({ setOnOldIE: true }));
 //Redirecting to https if not secure
 app.use(function (req, res, next) {
     if (req.secure || process.env.BLUEMIX_REGION === undefined) {
-        // Website you wish to allow to connect
         res.setHeader('Access-Control-Allow-Origin', 'https://gifted-pike.eu-de.mybluemix.net/');
-        // Request methods you wish to allow
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        // Request headers you wish to allow
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        // Set to true if you need the website to include cookies in the requests sent
-        // to the API (e.g. in case you use sessions)
         res.setHeader('Access-Control-Allow-Credentials', true);
 
         next();
@@ -118,7 +113,7 @@ var VR = new VisualRecognitionV3({
 
 var options = {
     "method": "POST",
-    "hostname": "gifted-pike.eu-de.mybluemix.net",
+    "hostname": "adoring-engelbart.eu-de.mybluemix.net",
     "path": [
         "tone"
     ],
@@ -310,7 +305,9 @@ io.on('connection', function (socket) {
         usernames.splice(usernames.indexOf(socket.username), usernames.indexOf(socket.username) + 1);
         socketids.splice(socketids.indexOf(socket.id), socketids.indexOf(socket.id) + 1);
         console.log(socket.username + ' disconnected');
-        io.emit('dis-connect message', socket.username + ' disconnected ');
+        if(socket.username){
+            io.emit('dis-connect message', socket.username + ' disconnected ');
+        }
     });
 
     socket.on('requestMood', function (msg) {
