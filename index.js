@@ -57,6 +57,17 @@ var VR = new VisualRecognitionV3({
 //Redirecting to https if not secure
 app.use(function (req, res, next) {
     if (req.secure || process.env.BLUEMIX_REGION === undefined) {
+        //cros fehler
+        // Website you wish to allow to connect
+        res.setHeader('Access-Control-Allow-Origin', 'https://gifted-pike.eu-de.mybluemix.net/');
+        // Request methods you wish to allow
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+        // Request headers you wish to allow
+        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+        // Set to true if you need the website to include cookies in the requests sent
+        // to the API (e.g. in case you use sessions)
+        res.setHeader('Access-Control-Allow-Credentials', true);
+
         next();
     } else {
         console.log('redirecting to https');
@@ -98,11 +109,13 @@ app.get('/', function (req, res) {
 var helmet = require('helmet');
 app.use(helmet());
 
+//HSTS
 const sixtyDays = 15768001;
 app.use(helmet({
     maxAge: sixtyDays
 }));
 
+//XSS
 var xssFilter = require('x-xss-protection');
 app.use(xssFilter({ setOnOldIE: true }));
 
