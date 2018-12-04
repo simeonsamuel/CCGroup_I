@@ -95,17 +95,14 @@ app.get('/', function (req, res) {
    res.cookie('foo', 'bar');
 });
 
-//header helmet fehler
 var helmet = require('helmet');
 app.use(helmet());
 
-// Sets "Strict-Transport-Security: max-age=5184000; includeSubDomains".
-const sixtyDaysInSeconds = 15768001
+const sixtyDays = 15768001;
 app.use(helmet({
-    maxAge: sixtyDaysInSeconds
-}))
+    maxAge: sixtyDays
+}));
 
-//xss Protection Fehler
 var xssFilter = require('x-xss-protection');
 app.use(xssFilter({ setOnOldIE: true }));
 
