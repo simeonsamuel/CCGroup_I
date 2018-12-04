@@ -366,7 +366,6 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         </div>
     </form>
 </div>
-<!--<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>-->
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-latest.min.js"
         integrity="sha384-UM1JrZIpBwVf5jj9dTKVvGiiZPZTLVoq4sfdvIe9SBumsvCuv6AHDNtEiIb5h1kU"
@@ -540,10 +539,18 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             window.scrollTo(0, document.body.scrollHeight);
         });
 
+
+        /**
+         * Function to give user feedback about wether or not it is a human face or not.
+         */
         socket.on('ProfileError', function () {
             alert("Kein Profilbild!");
         });
 
+        /**
+         * Function to enable user to use the chat if he doesn't exist in the DB when he tries to register
+         * ELse he gets an Error Msg and will not be forwarded to the chatwindow
+         */
         socket.on('userexists', function (status) {
             if (status === false) {
                 $('#registerContent').hide();
@@ -564,6 +571,11 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             }
         });
 
+        /**
+         * function to send request that contains the given chat msg to the mood analyzer service and colors the result on the chat page
+         * if msg is positive (happy) --> color: green
+         * if msg is negative (unhappy) --> color: red
+         */
         socket.on('responseMood', function (msg) {
             if (msg.localeCompare('{"mood":"happy"}')) {
                 document.getElementById("Mood").style.backgroundColor = "red";
@@ -572,6 +584,12 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             }
         });
 
+
+        /**
+         * function to send login data
+         * if login was successfully the user gets forwarded to the chatpage
+         * else he will receive a error msg
+         */
         $usernameForm.submit(function (e) {
             e.preventDefault();
             //alert($passwortInput.value);
@@ -623,10 +641,11 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             }
         });
     });
+
     /**
      *function to display the media file in correct type on the own chat
      * @returns {boolean}
-
+     *
      function sendfile (){
         if($('#file')[0].files[0] != undefined){
             let file = $('#file')[0].files[0];
@@ -635,34 +654,6 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         }
         return true;
     }*/
-
-    var dataFile = null;
-
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function (e) {
-                $('#choosenProfilepic').attr('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
-
-            dataFile = input.files[0]
-        }
-    }
-
-    function removePic() {
-        $('#choosenProfilepic').attr('src', 'avatar.jpeg');
-        dataFile = null;
-    }
-
-    $("#profilePicture").change(function () {
-        readURL(this);
-    });
-
-    function showFiledata(input) {
-        console.log(dataFile);
-    }
 </script>
 </body>
 </html>

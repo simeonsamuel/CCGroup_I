@@ -6,7 +6,7 @@
 var express = require('express');
 var app = express();
 
-//Facedetection and Database requirements
+//Facedetection requirements
 var fs = require('fs');
 var path = require('path');
 var uuid = require('uuid');
@@ -22,9 +22,6 @@ var validProfile= false;
 var usernames = [];
 var socketids = [];
 var loginpass;
-
-
-//needed to redirect to https later
 app.enable('trust proxy');
 
 //Helmet
@@ -45,7 +42,9 @@ var xssFilter = require('x-xss-protection');
 app.use(xssFilter({ setOnOldIE: true }));
 
 
-//Redirecting to https if not secure
+/**
+ * Set Headers to guarantee code safety and rediret to https if http is entered
+ */
 app.use(function (req, res, next) {
     if (req.secure || process.env.BLUEMIX_REGION === undefined) {
         res.setHeader('Access-Control-Allow-Origin', 'https://gifted-pike.eu-de.mybluemix.net/');
@@ -71,9 +70,10 @@ app.get('/', function (req, res) {
 });
 
 
-
-//Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (1)
-/* var session = require ('cookie-session');
+/**
+ * Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (1)
+ */
+var session = require ('cookie-session');
 var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
 app.use(session({
         name: 'session',
@@ -85,14 +85,7 @@ app.use(session({
             expires: expiryDate
         }
     })
-); */
-
-
-//Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (2)
-/*app.use(require('express-secure-cookie'));
-app.get('/', function (req, res) {
-   res.cookie('foo', 'bar');
-}); */
+);
 
 
 //IBM DB2
@@ -111,6 +104,7 @@ var VR = new VisualRecognitionV3({
     use_unauthenticated: false
 });
 
+//Mood Analyzer
 var options = {
     "method": "POST",
     "hostname": "adoring-engelbart.eu-de.mybluemix.net",
@@ -124,11 +118,15 @@ var options = {
     }
 };
 
-//Solution for: Missing or insecure "Content-Security-Policy" header
+/**
+ * IN PROGRESS
+ * Solution for: Missing or insecure "Content-Security-Policy" header
+ */
 /*app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: ["'self'", 'https://gifted-pike.eu-de.mybluemix.net/'],
-        styleSrc: ["'self'", 'https://gifted-pike.eu-de.mybluemix.net/']
+        styleSrc: ["'self'", 'https://gifted-pike.eu-de.mybluemix.net/'],
+        scriptSrc: ["'self'", "'unsafe-inline'", 'https://gifted-pike.eu-de.mybluemix.net/', 'https://code.jquery.com/jquery-latest.min.js', '/socket.io/socket.io.js']
     }
 }));*/
 
@@ -138,11 +136,9 @@ var options = {
  */
 io.on('connection', function (socket) {
 
-    /** function to add username to the username array (with push)
-     *  and to the socket itself
-     *  after proofing if the user is not already in the array
-     *  Then feedback about user is send back to client side: true or false as data
-     *  (connect message)
+    /**
+     * Function to register new user in the Database. A user will be registered when it doesn't DB and
+     * its profile picture is a human face otherwise his request will be declined (Error)
      */
     socket.on('new user', function (user) {
         socket.username = user.registerusername;
@@ -150,14 +146,14 @@ io.on('connection', function (socket) {
         db.open(connStr, function (err, conn) {
             if (err) return console.log(err);
 
-            //var sql = "SELECT COUNT(1) FROM USER_TABLE WHERE BENUTZERNAME = '" + socket.username + "' ;";
             var sql = "SELECT * FROM USER_TABLE WHERE BENUTZERNAME = '" + socket.username + "';";
 
             conn.query(sql, function (err, data) {
                 if (err) console.log(err);
                 else {
                     console.log(data);
-                    if (data.length > 0){ //if user is found
+                    //if user is found
+                    if (data.length > 0){
                         socket.emit('userexists', true);
                     }
                     else {
@@ -204,6 +200,10 @@ io.on('connection', function (socket) {
     });
 
 
+    /**
+     * Function that checks if user exists in the database and logs him in if username and password combination is correctly in DB
+     * Otherwise Error Msg
+     */
     socket.on('login user', function (data, callback) {
         var loginusergefunden = false;
         if (usernames.indexOf(data.loginusername) != -1) {
@@ -238,7 +238,8 @@ io.on('connection', function (socket) {
                     }
 
                     if (loginusergefunden === true) {
-                        callback(true); //Enter chatroom when entered Username and Passwort is found in Database
+                        //Enter chatroom when entered Username and Passwort is found in Database
+                        callback(true);
                     } else {
                         callback(false)
                     }
@@ -267,6 +268,7 @@ io.on('connection', function (socket) {
             io.emit('chat message', socket.username + ": " + msg);
         }
     });
+
 
     /**
      * function for private messaging:
@@ -310,6 +312,10 @@ io.on('connection', function (socket) {
         }
     });
 
+    /**
+     * Function to send a json to the tone analyzer service in order to get the mood of the given Msg
+     * Options: happy and unhappy
+     */
     socket.on('requestMood', function (msg) {
         var req = http2.request(options, function (res) {
             var chunks = [];
@@ -338,6 +344,12 @@ http.listen(port, function () {
     console.log('listening on *:' + port);
 });
 
+
+/**
+ * Function that parses a imagestring into a base64-Image
+ * @param imageString
+ * @returns {null}
+ */
 function parseBase64Image(imageString) {
     var matches = imageString.match(/^data:image\/([A-Za-z-+/]+);base64,(.+)$/);
     var resource = {};
@@ -349,18 +361,26 @@ function parseBase64Image(imageString) {
     return resource;
 }
 
+/**
+ * Function to detect if the image is a valid human face or not
+ * trough using the visual recognition service
+ * @param base64PIC
+ * @returns {Promise<any>}
+ */
 function checkFace(base64PIC) {
     return new Promise(function (resolve, reject) {
         var params = {
             images_file: null
         };
-        // write the base64 image to a temp file
+
+        // Takes created base64 img and saves it to a variable
         var resource = parseBase64Image(base64PIC);
         var temp = path.join(os.tmpdir(), uuid.v1() + '.' + resource.type);
         fs.writeFileSync(temp, resource.data);
         params.images_file = fs.createReadStream(temp);
 
-        params.threshold = 0.5; //So the classifers only show images with a confindence level of 0.5 or higher
+        //Limit of 50% accordance of the img to a human face
+        params.threshold = 0.5;
 
         VR.detectFaces(params,function (err,response) {
             if (response.value && response.value.length) {
