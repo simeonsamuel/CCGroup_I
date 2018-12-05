@@ -72,7 +72,6 @@ app.get('/', function (req, res) {
 
 /**
  * Solution for: Missing Secure Attribute in Encrypted Session (SSL) Cookie (1)
- */
 var session = require ('cookie-session');
 var expiryDate = new Date( Date.now() + 60 * 60 * 1000 ); // 1 hour
 app.use(session({
@@ -86,6 +85,7 @@ app.use(session({
         }
     })
 );
+*/
 
 
 //IBM DB2
@@ -389,6 +389,13 @@ function checkFace(base64PIC) {
             if(response["images"][0]["faces"].length>0){
                 validProfile=true;
                 console.log("GESICHT ERKANNT");
+				
+				//--- Save given File: base64Pic.name and base64PIC.type is undefined
+				//var imgWithPath = path.join("Profiles", base64PIC.name + '.' + base64PIC.type);
+				//var buf = new Buffer(imgWithPath, 'base64');
+				//fs.writeFile(imgWithPath, buf);
+				//---
+				
                 resolve(true);
             }else{
                 console.log("KEIN GESICHT GEFUNDEN!");
