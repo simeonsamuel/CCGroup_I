@@ -24,6 +24,14 @@ var socketids = [];
 var loginpass;
 app.enable('trust proxy');
 
+var redis = require('redis');
+var adapt = require('socket.io-redis');
+
+var publish = redis.createClient('14507', 'redis-14507.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "UAYYcK3pR62rzL7H9oCtM0HqCUpVSZsG"}); //to send
+var submission = redis.createClient('14507', 'redis-14507.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "UAYYcK3pR62rzL7H9oCtM0HqCUpVSZsG"});
+
+io.adapter(adapt({pubClient: publish, subClient: submission}));
+
 //Helmet
 var helmet = require('helmet');
 app.use(helmet());
