@@ -45,10 +45,11 @@ app.use(helmet.hsts({
     preload: true
 }));
 
+/**
 //Solution for: Missing or insecure "X-XSS-Protection" header
 var xssFilter = require('x-xss-protection');
 app.use(xssFilter({ setOnOldIE: true }));
-
+*/
 
 /**
  * Set Headers to guarantee code safety and rediret to https if http is entered
