@@ -366,19 +366,13 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
         </div>
     </form>
 </div>
-<script src="https://code.jquery.com/jquery-latest.min.js"
-        integrity="sha384-UM1JrZIpBwVf5jj9dTKVvGiiZPZTLVoq4sfdvIe9SBumsvCuv6AHDNtEiIb5h1kU"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script src="wss://gifted-pike.eu-de.mybluemix.net/socket.io/socket.io.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
     $(function () {
         var socket = io({
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            reconnectionAttempts: 99999,
             transports: ['websocket']
         });
         var $usernameForm = $('#usernameForm');

@@ -248,10 +248,10 @@ io.on('connection', function (socket) {
                     if (loginusergefunden === true) {
                         //Enter chatroom when entered Username and Passwort is found in Database
                         //callback(true);
-						socket.emit('userexists', true);
+						socket.emit('userexists', false);
                     } else {
                         //callback(false)
-						socket.emit('userexists', false);
+						socket.emit('userexists', true);
                     }
 
                     conn.close(function () {
