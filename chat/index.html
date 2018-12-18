@@ -604,16 +604,18 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
             socket.emit('login user', {
                 loginusername: $usernameInput.val(),
                 loginpasswort: $passwortInput.value
-            }, function (data) {
+            }, function (data) {/*
                 if (data) {
                     $('#registerContent').hide();
                     $('#chatDiv').show();
                 } else {
                     $usernameError.html('Username or Password is incorrect or you are already logged in. Please try again or register.');
-                }
+                }*/
             });
             $usernameInput.val('');
         });
+		
+		
 
 
         /**

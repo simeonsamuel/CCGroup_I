@@ -178,7 +178,6 @@ io.on('connection', function (socket) {
                                             if (err) console.log(err);
                                             else console.log(data);
 
-                                            //callback(true);
                                             socket.emit('userexists', false);
                                             usernames.push(socket.username);
                                             socketids.push(socket.id);
@@ -213,10 +212,10 @@ io.on('connection', function (socket) {
      * Function that checks if user exists in the database and logs him in if username and password combination is correctly in DB
      * Otherwise Error Msg
      */
-    socket.on('login user', function (data, callback) {
+    socket.on('login user', function (data) {
         var loginusergefunden = false;
         if (usernames.indexOf(data.loginusername) != -1) {
-            callback(false);
+            socket.emit('userexists', false);
         } else {
             socket.username = data.loginusername;
             loginpass = data.loginpasswort;
@@ -248,9 +247,11 @@ io.on('connection', function (socket) {
 
                     if (loginusergefunden === true) {
                         //Enter chatroom when entered Username and Passwort is found in Database
-                        callback(true);
+                        //callback(true);
+						socket.emit('userexists', true);
                     } else {
-                        callback(false)
+                        //callback(false)
+						socket.emit('userexists', false);
                     }
 
                     conn.close(function () {
