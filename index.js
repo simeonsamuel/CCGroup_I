@@ -56,7 +56,7 @@ app.use(xssFilter({ setOnOldIE: true }));
  */
 app.use(function (req, res, next) {
     if (req.secure || process.env.BLUEMIX_REGION === undefined) {
-        res.setHeader('Access-Control-Allow-Origin', 'https://gifted-pike.eu-de.mybluemix.net/');
+        res.setHeader('Access-Control-Allow-Origin', 'wss://gifted-pike.eu-de.mybluemix.net/socket.io/socket.io.js');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
         res.setHeader('Access-Control-Allow-Credentials', true);
