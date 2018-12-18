@@ -13,7 +13,7 @@ var uuid = require('uuid');
 var os = require('os');
 var VisualRecognitionV3 = require('watson-developer-cloud/visual-recognition/v3');
 var http = require('http').Server(app);
-var http2 = require("http");
+//var http2 = require("http");
 var io = require('socket.io').listen(http);
 var sha256 = require("sha256");
 var port = process.env.PORT || 3000;
@@ -324,6 +324,7 @@ io.on('connection', function (socket) {
      * Function to send a json to the tone analyzer service in order to get the mood of the given Msg
      * Options: happy and unhappy
      */
+    /**
     socket.on('requestMood', function (msg) {
         var req = http2.request(options, function (res) {
             var chunks = [];
@@ -341,8 +342,9 @@ io.on('connection', function (socket) {
         req.write(JSON.stringify({texts: [msg]}));
         req.end();
     });
-
+     */
 });
+
 
 /**
  * function to listening to the port setted above
