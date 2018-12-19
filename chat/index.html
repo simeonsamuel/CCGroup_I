@@ -373,7 +373,7 @@ Name: Simeon Samuel Matriculation Nr.: 761386-->
 
     $(function () {
         var socket = io({
-            transports: ['websocket']
+            transports: ['polling', 'websocket']
         });
         var $usernameForm = $('#usernameForm');
         var $registerForm = $('#registerForm');
