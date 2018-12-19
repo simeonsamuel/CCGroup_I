@@ -28,9 +28,9 @@ var redis = require('redis');
 var adapt = require('socket.io-redis');
 
 var publish = redis.createClient('14507', 'redis-14507.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "UAYYcK3pR62rzL7H9oCtM0HqCUpVSZsG"}); //to send
-var submission = redis.createClient('14507', 'redis-14507.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "UAYYcK3pR62rzL7H9oCtM0HqCUpVSZsG"});
+var sub = redis.createClient('14507', 'redis-14507.c135.eu-central-1-1.ec2.cloud.redislabs.com', { auth_pass: "UAYYcK3pR62rzL7H9oCtM0HqCUpVSZsG"});
 
-io.adapter(adapt({pubClient: publish, subClient: submission}));
+io.adapter(adapt({pubClient: publish, subClient: sub}));
 
 //Helmet
 var helmet = require('helmet');
@@ -56,10 +56,10 @@ app.use(xssFilter({ setOnOldIE: true }));
  */
 app.use(function (req, res, next) {
     if (req.secure || process.env.BLUEMIX_REGION === undefined) {
-        res.setHeader('Access-Control-Allow-Origin', 'wss://gifted-pike.eu-de.mybluemix.net/socket.io/socket.io.js');
+        /*res.setHeader('Access-Control-Allow-Origin', 'wss://gifted-pike.eu-de.mybluemix.net/socket.io/socket.io.js');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-        res.setHeader('Access-Control-Allow-Credentials', true);
+        res.setHeader('Access-Control-Allow-Credentials', true);*/
 
         next();
     } else {
